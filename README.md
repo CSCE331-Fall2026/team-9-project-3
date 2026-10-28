@@ -1,24 +1,29 @@
-# [Team Number] — Panda Express POS Web App
-One-sentence description of the product.
+# Team 9 — Panda Express POS Web App
+
+A publicly hosted web POS and ordering system for Panda Express that supports cashiers, managers, and customers, including shared group carts for pickup orders.
+
 ## Live Links
-- **Deployed app:** <URL or "TBD">
-- **Documentation:** <Cloudflare URL or "TBD">
-- **Project board (backlog + burn-up):** <GitHub Projects URL>
+- **Deployed app:** TBD
+- **Documentation:** TBD
+- **Project board (backlog + burn-up):** TBD
+
 ## Roles
 | Name | Role |
 |------|------|
-| | Project Manager & Full-stack |
-| | Front-end Lead |
-| | Front-end Lead |
-| | Back-end Lead |
-| | Back-end Lead |
+| Jack Berry | Project Manager & Full-stack |
+| Nevin Kalloor | Front-end Lead |
+| Dishant Patel | Front-end Lead |
+| Ayaan Budhwani | Back-end Lead |
+
 ## Novel Feature
-**What it is:** 2–3 sentences describing the feature.
-**Motivation:** the user problem/opportunity it addresses and which user type
-it serves (cashier, manager, customer, or kitchen staff). [1]
+**What it is:** Group / shared cart ordering. Customers can create or join a shared order with a short code or link, each person adds their own items to one cart in real time, and one person submits a single pickup order when the group is ready.
+
+**Motivation:** Groups often struggle to collect everyone’s picks into one ticket, which slows the line and causes wrong or incomplete orders. This feature helps **customers** order together without phone-tag, and gives **cashiers** one clean group ticket instead of several partial ones.
+
 ## Tech Stack
-- **Front-end:**
-- **Back-end:** Java/JDBC
+- **Front-end:** React (Vite), hosted on Vercel
+- **Back-end:** Existing Java/JDBC from Project 2, exposed via a thin HTTP API layer (Javalin) — no full framework rewrite
 - **Database:** PostgreSQL on AWS
-- **Hosting service:**
-- **Authentication: **
+- **API hosting:** Render
+- **Documentation:** Cloudflare Pages (from `/docs`)
+- **Authentication:** Google OAuth2
