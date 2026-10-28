@@ -4,8 +4,8 @@ A publicly hosted web POS and ordering system for Panda Express that supports ca
 
 ## Live Links
 - **Deployed app:** TBD
-- **Documentation:** https://github.com/orgs/CSCE331-Fall2026/projects/28/views/1
-- **Project board (backlog + burn-up):** TBD
+- **Documentation:** TBD
+- **Project board (backlog + burn-up):** https://github.com/orgs/CSCE331-Fall2026/projects/28/views/1
 
 ## Roles
 | Name | Role |
