@@ -23,7 +23,7 @@ A publicly hosted web POS and ordering system for Panda Express that supports ca
 ## Tech Stack
 - **Front-end:** React (Vite), hosted on Vercel
 - **Back-end:** Existing Java/JDBC from Project 2, exposed via a thin HTTP API layer (Javalin) — no full framework rewrite
-- **Database:** PostgreSQL on AWS
+- **Database:** PostgreSQL on Neon (migrated from Project 2 TAMU/AWS DB for external hosting)
 - **API hosting:** Render
 - **Documentation:** Cloudflare Pages (from `/docs`)
 - **Authentication:** Google OAuth2
