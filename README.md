@@ -3,8 +3,8 @@
 A publicly hosted web POS and ordering system for Panda Express that supports cashiers, managers, and customers, including shared group carts for pickup orders.
 
 ## Live Links
-- **Deployed app:** TBD
-- **API:** TBD
+- **Deployed app:** https://team-9-project-3-src.vercel.app/
+- **API:** https://team-9-project-3.onrender.com
 - **Documentation:** TBD
 - **Project board (backlog + burn-up):** https://github.com/orgs/CSCE331-Fall2026/projects/28/views/1
 
