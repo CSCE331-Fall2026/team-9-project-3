@@ -6,3 +6,16 @@ local/
 *.swp
 .idea/
 .vscode/
+
+# Java / Maven
+src/api/target/
+*.class
+
+# Node / Vite
+src/web/node_modules/
+src/web/dist/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
