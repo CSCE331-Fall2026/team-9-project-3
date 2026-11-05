@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: team9-pos-api
+    runtime: docker
+    rootDir: src/api
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PORT
+        value: "8080"
