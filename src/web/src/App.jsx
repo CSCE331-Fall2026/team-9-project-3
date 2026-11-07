@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { API_BASE } from './api/client'
 import { fetchHealth } from './api/health'
-import { fetchMenu } from './api/menu'
+import { useMenu } from './hooks/useMenu'
 
 function App() {
   const [health, setHealth] = useState({ status: 'loading' })
-  const [menu, setMenu] = useState([])
-  const [menuError, setMenuError] = useState('')
+  const { items: menu, loading: menuLoading, error: menuError } = useMenu()
 
   useEffect(() => {
     let cancelled = false
@@ -21,19 +20,6 @@ function App() {
       } catch (err) {
         if (!cancelled) {
           setHealth({ status: 'error', message: String(err.message || err) })
-        }
-      }
-
-      try {
-        const items = await fetchMenu()
-        if (!cancelled) {
-          setMenu(items)
-          setMenuError('')
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setMenu([])
-          setMenuError(String(err.message || err))
         }
       }
     }
@@ -70,7 +56,8 @@ function App() {
       <section className="menu">
         <h2>Live menu</h2>
         {menuError ? <p className="error">{menuError}</p> : null}
-        {!menuError && menu.length === 0 ? <p>Loading menu…</p> : null}
+        {menuLoading ? <p>Loading menu…</p> : null}
+        {!menuLoading && !menuError && menu.length === 0 ? <p>No menu items available.</p> : null}
         {menu.length > 0 ? (
           <ul className="menu-list">
             {menu.map((item) => (
