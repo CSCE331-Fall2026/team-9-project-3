@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+import { API_BASE } from './api/client'
+import { fetchHealth } from './api/health'
+import { fetchMenu } from './api/menu'
 
 function App() {
   const [health, setHealth] = useState({ status: 'loading' })
@@ -13,8 +14,7 @@ function App() {
 
     async function load() {
       try {
-        const healthRes = await fetch(`${API_BASE}/api/health`)
-        const healthJson = await healthRes.json()
+        const healthJson = await fetchHealth()
         if (!cancelled) {
           setHealth(healthJson)
         }
@@ -25,13 +25,9 @@ function App() {
       }
 
       try {
-        const menuRes = await fetch(`${API_BASE}/api/menu`)
-        if (!menuRes.ok) {
-          throw new Error(`Menu request failed (${menuRes.status})`)
-        }
-        const menuJson = await menuRes.json()
+        const items = await fetchMenu()
         if (!cancelled) {
-          setMenu(Array.isArray(menuJson) ? menuJson : [])
+          setMenu(items)
           setMenuError('')
         }
       } catch (err) {
