@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { API_BASE } from './api/client'
 import { fetchHealth } from './api/health'
+import MenuGrid from './components/MenuGrid'
 import { useMenu } from './hooks/useMenu'
 
 function App() {
@@ -58,17 +59,7 @@ function App() {
         {menuError ? <p className="error">{menuError}</p> : null}
         {menuLoading ? <p>Loading menu…</p> : null}
         {!menuLoading && !menuError && menu.length === 0 ? <p>No menu items available.</p> : null}
-        {menu.length > 0 ? (
-          <ul className="menu-list">
-            {menu.map((item) => (
-              <li key={item.id}>
-                <span className="name">{item.name}</span>
-                <span className="category">{item.category}</span>
-                <span className="price">${Number(item.basePrice).toFixed(2)}</span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        {menu.length > 0 ? <MenuGrid items={menu} /> : null}
       </section>
     </main>
   )

@@ -1,0 +1,71 @@
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.category-tab {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid #d8c9bd;
+  border-radius: 999px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.category-tab.active {
+  background: #d62300;
+  border-color: #d62300;
+  color: #fff;
+}
+
+.menu-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.menu-grid--customer {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.menu-grid--cashier {
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+}
+
+.menu-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid #eadfd5;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.menu-card--cashier {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.menu-card__name {
+  font-weight: 600;
+}
+
+.menu-card__category {
+  font-size: 0.85rem;
+  opacity: 0.65;
+}
+
+.menu-card__price {
+  font-weight: 600;
+}
