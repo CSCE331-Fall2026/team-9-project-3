@@ -1,11 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 import MenuGrid from '../components/MenuGrid'
+import OrderPanel from '../components/OrderPanel'
 import { useMenu } from '../hooks/useMenu'
+import { useOrder } from '../hooks/useOrder'
 
-// Cashier story: view the menu to find items and prices. Read-only, with a quick search.
+// Cashier stories: view the menu to find items and prices (with a quick search),
+// and build a new order from it. Add buttons only work after New order is pressed.
 function CashierMenu() {
+  const { token } = useAuth()
   const { items, loading, error } = useMenu()
+  const order = useOrder(token)
   const [query, setQuery] = useState('')
 
   const needle = query.trim().toLowerCase()
@@ -23,6 +29,8 @@ function CashierMenu() {
         </div>
       </header>
 
+      <OrderPanel order={order} />
+
       <section className="menu">
         <input
           type="search"
@@ -35,7 +43,14 @@ function CashierMenu() {
         {loading ? <p>Loading menu…</p> : null}
         {error ? <p className="error">{error}</p> : null}
         {!loading && !error && matches.length === 0 ? <p>No matching items.</p> : null}
-        {matches.length > 0 ? <MenuGrid items={matches} variant="cashier" /> : null}
+        {matches.length > 0 ? (
+          <MenuGrid
+            items={matches}
+            variant="cashier"
+            onAdd={order.addItem}
+            addDisabled={!order.started}
+          />
+        ) : null}
       </section>
     </main>
   )
