@@ -13,7 +13,8 @@ import pos.api.db.Database;
  */
 public class MenuDao {
    private static final String SELECT_COLUMNS =
-      "SELECT id, name, category, base_price, is_available FROM menu_item";
+      "SELECT id, name, category, base_price, is_available, "
+      + "calorie, protein, fat, carbohydrates, allergens FROM menu_item";
 
    public List<MenuItem> loadAvailable() {
       return queryList(SELECT_COLUMNS + " WHERE is_available = TRUE ORDER BY category, name");
@@ -33,7 +34,12 @@ public class MenuDao {
                rows.getString("name"),
                rows.getString("category"),
                rows.getDouble("base_price"),
-               rows.getBoolean("is_available")));
+               rows.getBoolean("is_available"),
+               nullableInt(rows, "calorie"),
+               nullableInt(rows, "protein"),
+               nullableInt(rows, "fat"),
+               nullableInt(rows, "carbohydrates"),
+               rows.getString("allergens")));
          }
          rows.close();
          stmt.close();
@@ -44,5 +50,11 @@ public class MenuDao {
       }
 
       return items;
+   }
+
+   // getInt() turns SQL NULL into 0, which would read as "0 calories"; keep null instead.
+   private static Integer nullableInt(ResultSet rows, String column) throws java.sql.SQLException {
+      int value = rows.getInt(column);
+      return rows.wasNull() ? null : Integer.valueOf(value);
    }
 }
