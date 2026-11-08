@@ -14,6 +14,13 @@ psql "$DATABASE_URL" -f db/seed-menu.sql
 ```
 
 4. Put the same URL in Render as `DATABASE_URL` (and optionally in `local/db.txt` for laptop runs — see below).
+5. For employee Google login:
+
+```bash
+psql "$DATABASE_URL" -f db/employee.sql
+```
+
+Update the seeded emails to real Google accounts (see `docs/google-oauth-setup.md`).
 
 ## Full Project 2 data (optional later)
 
