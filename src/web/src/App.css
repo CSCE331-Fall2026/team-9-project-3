@@ -101,6 +101,38 @@
   font-weight: 600;
 }
 
+.login-card {
+  margin-top: 1.5rem;
+  padding: 1.25rem 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.text-link {
+  color: #7a2e12;
+  font-weight: 600;
+}
+
+.secondary {
+  border: 1px solid #c9b4a5;
+  background: #fff;
+  color: #1c1410;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.secondary:hover {
+  background: #f7efe8;
+}
+
 @media (max-width: 560px) {
   .menu-list li {
     grid-template-columns: 1fr auto;

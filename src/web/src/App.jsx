@@ -1,68 +1,49 @@
-import { useEffect, useState } from 'react'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import { AuthProvider } from './auth/AuthContext'
+import ProtectedRoute from './auth/ProtectedRoute'
+import LoginPage from './pages/LoginPage'
+import RoleHome from './pages/RoleHome'
+import StatusPage from './pages/StatusPage'
 import './App.css'
-import { API_BASE } from './api/client'
-import { fetchHealth } from './api/health'
-import MenuGrid from './components/MenuGrid'
-import { useMenu } from './hooks/useMenu'
 
-function App() {
-  const [health, setHealth] = useState({ status: 'loading' })
-  const { items: menu, loading: menuLoading, error: menuError } = useMenu()
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      try {
-        const healthJson = await fetchHealth()
-        if (!cancelled) {
-          setHealth(healthJson)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setHealth({ status: 'error', message: String(err.message || err) })
-        }
-      }
-    }
-
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const apiOk = health.status === 'ok' && health.database === 'connected'
-
+function AppRoutes() {
   return (
-    <main className="page">
-      <header className="header">
-        <p className="brand">Team 9 · Panda Express POS</p>
-        <h1>Sprint 1 deploy check</h1>
-        <p className="lede">
-          React on Vercel talking to the Java API on Render, backed by Neon Postgres.
-        </p>
-      </header>
-
-      <section className="status" aria-live="polite">
-        <h2>API status</h2>
-        <p>
-          <span className={apiOk ? 'pill ok' : 'pill bad'}>
-            {apiOk ? 'Connected' : 'Not connected'}
-          </span>
-        </p>
-        <p className="meta">Endpoint: <code>{API_BASE}/api/health</code></p>
-        {health.message ? <p className="error">{health.message}</p> : null}
-      </section>
-
-      <section className="menu">
-        <h2>Live menu</h2>
-        {menuError ? <p className="error">{menuError}</p> : null}
-        {menuLoading ? <p>Loading menu…</p> : null}
-        {!menuLoading && !menuError && menu.length === 0 ? <p>No menu items available.</p> : null}
-        {menu.length > 0 ? <MenuGrid items={menu} /> : null}
-      </section>
-    </main>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/status" element={<StatusPage />} />
+      <Route
+        path="/cashier"
+        element={(
+          <ProtectedRoute roles={['cashier']}>
+            <RoleHome role="cashier" />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/manager"
+        element={(
+          <ProtectedRoute roles={['manager']}>
+            <RoleHome role="manager" />
+          </ProtectedRoute>
+        )}
+      />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </GoogleOAuthProvider>
+  )
+}
