@@ -4,6 +4,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import pos.api.auth.SessionTokens;
 import pos.api.db.Database;
 import pos.api.menu.MenuDao;
 import pos.api.menu.MenuItem;
+import pos.api.order.OrderDao;
+import pos.api.order.OrderLine;
 
 /**
  * Thin HTTP layer over Project 2 JDBC for Sprint 1 demos.
@@ -26,6 +29,7 @@ public class App {
    public static void main(String[] args) {
       int port = readPort();
       MenuDao menuDao = new MenuDao();
+      OrderDao orderDao = new OrderDao();
       AuthService authService = buildAuthService();
 
       Javalin app = Javalin.create(config -> {
@@ -45,6 +49,8 @@ public class App {
 
       app.get("/api/cashier/home", ctx -> roleHome(ctx, authService, "cashier"));
       app.get("/api/manager/home", ctx -> roleHome(ctx, authService, "manager"));
+
+      app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao));
 
       app.exception(AuthException.class, (e, ctx) -> {
          Map<String, String> error = new HashMap<String, String>();
@@ -136,6 +142,60 @@ public class App {
       body.put("message", "Welcome to the " + requiredRole + " POS.");
       body.put("user", AuthService.userMap(employee));
       ctx.json(body);
+   }
+
+   /**
+    * Saves a new cashier order.
+    * Body: {"items": [{"menuItemId": 2, "quantity": 1}, ...]}
+    * Reply: {"orderId": 91501, "subtotal": 13.50, "lineCount": 2}
+    */
+   private static void createOrder(Context ctx, AuthService authService, OrderDao orderDao)
+      throws AuthException {
+      Employee employee = authService.requireEmployee(ctx.header("Authorization"));
+      if (!"cashier".equalsIgnoreCase(employee.getRole())) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "Only a cashier can create an order.");
+         ctx.status(403).json(error);
+         return;
+      }
+
+      try {
+         List<OrderLine> lines = readOrderLines(ctx);
+         ctx.status(201).json(orderDao.createOrder(lines));
+      } catch (IllegalArgumentException e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(400).json(error);
+      } catch (Exception e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(500).json(error);
+      }
+   }
+
+   // Turns the JSON "items" list into OrderLine objects.
+   private static List<OrderLine> readOrderLines(Context ctx) {
+      Map<?, ?> body = ctx.bodyAsClass(Map.class);
+      Object rawItems = body == null ? null : body.get("items");
+      if (!(rawItems instanceof List)) {
+         throw new IllegalArgumentException("Send an \"items\" list.");
+      }
+
+      List<OrderLine> lines = new ArrayList<OrderLine>();
+      for (Object rawItem : (List<?>) rawItems) {
+         if (!(rawItem instanceof Map)) {
+            throw new IllegalArgumentException("Each item needs a menuItemId and quantity.");
+         }
+         Map<?, ?> item = (Map<?, ?>) rawItem;
+         Object menuItemId = item.get("menuItemId");
+         Object quantity = item.get("quantity");
+         if (!(menuItemId instanceof Number) || !(quantity instanceof Number)) {
+            throw new IllegalArgumentException("Each item needs a menuItemId and quantity.");
+         }
+         lines.add(new OrderLine(((Number) menuItemId).intValue(),
+            ((Number) quantity).intValue()));
+      }
+      return lines;
    }
 
    private static int readPort() {

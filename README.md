@@ -38,7 +38,7 @@ db/          Neon schema + menu seed (see db/README.md)
 ## Local development
 
 ### Database
-Follow `db/README.md` to create a Neon project and load `db/schema.sql` + `db/seed-menu.sql`.  
+Follow `db/README.md` to create a Neon project and load `db/schema.sql` + `db/seed-menu.sql` + `db/store.sql` (orders need the store row).  
 For employee Google login, also run `db/employee.sql` (see `docs/google-oauth-setup.md`).
 
 ### API
@@ -51,6 +51,8 @@ export SESSION_SECRET='long-random-string'
 java -jar target/team9-api.jar
 ```
 Health: `http://localhost:8080/api/health` · Menu: `http://localhost:8080/api/menu`
+
+Create order (cashier sign-in required): `POST /api/orders` with `{"items": [{"menuItemId": 2, "quantity": 1}]}`. Returns the new `orderId` and `subtotal`.
 
 ### Web
 ```bash

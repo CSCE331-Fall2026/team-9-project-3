@@ -154,3 +154,13 @@
     align-self: center;
   }
 }
+
+.menu-search {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d8c9bd;
+  border-radius: 8px;
+  font: inherit;
+}
