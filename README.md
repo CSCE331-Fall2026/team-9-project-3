@@ -38,12 +38,15 @@ db/          Neon schema + menu seed (see db/README.md)
 ## Local development
 
 ### Database
-Follow `db/README.md` to create a Neon project and load `db/schema.sql` + `db/seed-menu.sql`.
+Follow `db/README.md` to create a Neon project and load `db/schema.sql` + `db/seed-menu.sql`.  
+For employee Google login, also run `db/employee.sql` (see `docs/google-oauth-setup.md`).
 
 ### API
 ```bash
 cd src/api
 export DATABASE_URL='postgres://USER:PASS@HOST/DB?sslmode=require'
+export GOOGLE_CLIENT_ID='YOUR_CLIENT_ID.apps.googleusercontent.com'
+export SESSION_SECRET='long-random-string'
 ./mvnw -DskipTests package
 java -jar target/team9-api.jar
 ```
@@ -54,9 +57,12 @@ Health: `http://localhost:8080/api/health` · Menu: `http://localhost:8080/api/m
 cd src/web
 cp .env.example .env.local
 # set VITE_API_URL=http://localhost:8080
+# set VITE_GOOGLE_CLIENT_ID to the same Google client ID
 npm install
 npm run dev
 ```
+
+Employee login lives at `/login`. Cashier/manager homes are protected routes.
 
 ## Deploy (Sprint 1)
 1. Neon: create DB, run schema + seed, copy connection string.
