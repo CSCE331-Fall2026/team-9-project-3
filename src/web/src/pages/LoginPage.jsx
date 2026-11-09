@@ -1,12 +1,12 @@
 import { GoogleLogin } from '@react-oauth/google'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
 function homeForRole(role) {
-  return role === 'manager' ? '/manager' : '/cashier'
+  return role === 'customer' ? '/menu' : role === 'manager' ? '/manager' : '/cashier'
 }
 
-export default function LoginPage() {
+export default function LoginPage({ customer = false }) {
   const { user, loading, error, setError, loginWithGoogleIdToken } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   async function handleSuccess(response) {
     try {
-      const nextUser = await loginWithGoogleIdToken(response.credential)
+      const nextUser = await loginWithGoogleIdToken(response.credential, customer)
       const redirectTo = location.state?.from || homeForRole(nextUser.role)
       navigate(redirectTo, { replace: true })
     } catch (err) {
@@ -30,10 +30,15 @@ export default function LoginPage() {
     <main className="page login-page">
       <header className="header">
         <p className="brand">Team 9 · Panda Express POS</p>
-        <h1>Employee sign in</h1>
+        <h1>{customer ? 'Customer' : 'Employee'} sign in</h1>
         <p className="lede">
-          Use your Google account. Access is limited to emails listed as cashier or manager.
+          {customer ? 'Use your Google account to browse available menu items and prices.' : 'Use your Google account. Access is limited to emails listed as cashier or manager.'}
         </p>
+        <div className="actions">
+          <Link className="text-link" to={customer ? '/login' : '/customer/login'}>
+            {customer ? 'Employee sign in' : 'Customer sign in'}
+          </Link>
+        </div>
       </header>
 
       <section className="login-card" aria-live="polite">

@@ -33,7 +33,26 @@ public class AuthService {
       return body;
    }
 
+   // Customer browsing needs a verified identity, not an employee database record.
+   // ID 0 is a session placeholder, not a persisted customer ID or order identity.
+   public Map<String, Object> loginCustomerWithGoogle(String idToken) throws Exception {
+      GoogleTokenVerifier.GoogleIdentity identity = googleTokenVerifier.verify(idToken);
+      Employee customer = new Employee(0, identity.getEmail(), identity.getName(), "customer");
+      Map<String, Object> body = new HashMap<>();
+      body.put("token", sessionTokens.issue(customer));
+      body.put("user", userMap(customer));
+      return body;
+   }
+
    public Employee requireEmployee(String authorizationHeader) throws AuthException {
+      Employee user = requireUser(authorizationHeader);
+      if (!"cashier".equalsIgnoreCase(user.getRole()) && !"manager".equalsIgnoreCase(user.getRole())) {
+         throw new AuthException("Employee sign-in required.");
+      }
+      return user;
+   }
+
+   public Employee requireUser(String authorizationHeader) throws AuthException {
       if (authorizationHeader == null || authorizationHeader.isBlank()) {
          throw new AuthException("Sign in required.");
       }

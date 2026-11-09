@@ -6,6 +6,7 @@ import CashierMenu from './pages/CashierMenu'
 import CustomerMenu from './pages/CustomerMenu'
 import LoginPage from './pages/LoginPage'
 import RoleHome from './pages/RoleHome'
+import ManagerInventory from './pages/ManagerInventory'
 import StatusPage from './pages/StatusPage'
 import './App.css'
 
@@ -17,7 +18,12 @@ function AppRoutes() {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/status" element={<StatusPage />} />
-      <Route path="/menu" element={<CustomerMenu />} />
+      <Route path="/customer/login" element={<LoginPage customer />} />
+      <Route path="/menu" element={(
+        <ProtectedRoute roles={['customer']}>
+          <CustomerMenu />
+        </ProtectedRoute>
+      )} />
       <Route
         path="/cashier/menu"
         element={(
@@ -39,6 +45,14 @@ function AppRoutes() {
         element={(
           <ProtectedRoute roles={['manager']}>
             <RoleHome role="manager" />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/manager/inventory"
+        element={(
+          <ProtectedRoute roles={['manager']}>
+            <ManagerInventory />
           </ProtectedRoute>
         )}
       />

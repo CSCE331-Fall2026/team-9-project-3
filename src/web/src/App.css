@@ -164,3 +164,13 @@
   border-radius: 8px;
   font: inherit;
 }
+
+.inventory-page { max-width: 1100px; }
+.inventory-table-scroll { overflow-x: auto; }
+.inventory-table { width: 100%; border-collapse: collapse; text-align: left; }
+.inventory-table caption { text-align: left; margin-bottom: 0.75rem; color: #555; }
+.inventory-table th,
+.inventory-table td { padding: 0.75rem; border-bottom: 1px solid #e4d8cf; }
+.inventory-table thead { background: #f7efe8; }
+.inventory-table .pill { white-space: nowrap; }
+.secondary:disabled { opacity: 0.6; cursor: wait; }

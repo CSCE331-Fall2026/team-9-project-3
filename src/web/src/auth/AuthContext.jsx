@@ -61,9 +61,9 @@ export function AuthProvider({ children }) {
     loading,
     error,
     setError,
-    async loginWithGoogleIdToken(idToken) {
+    async loginWithGoogleIdToken(idToken, customer = false) {
       setError('')
-      const res = await fetch(`${API_BASE}/api/auth/google`, {
+      const res = await fetch(`${API_BASE}/api/auth/${customer ? 'customer/' : ''}google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),

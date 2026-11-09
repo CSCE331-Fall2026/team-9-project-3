@@ -17,6 +17,7 @@ import pos.api.auth.EmployeeDao;
 import pos.api.auth.GoogleTokenVerifier;
 import pos.api.auth.SessionTokens;
 import pos.api.db.Database;
+import pos.api.inventory.InventoryDao;
 import pos.api.menu.MenuDao;
 import pos.api.menu.MenuItem;
 import pos.api.order.OrderDao;
@@ -30,6 +31,7 @@ public class App {
       int port = readPort();
       MenuDao menuDao = new MenuDao();
       OrderDao orderDao = new OrderDao();
+      InventoryDao inventoryDao = new InventoryDao();
       AuthService authService = buildAuthService();
 
       Javalin app = Javalin.create(config -> {
@@ -44,11 +46,14 @@ public class App {
       app.get("/api/health", App::health);
       app.get("/api/menu", ctx -> menu(ctx, menuDao));
 
-      app.post("/api/auth/google", ctx -> loginGoogle(ctx, authService));
+      app.post("/api/auth/google", ctx -> loginGoogle(ctx, authService, false));
+      app.post("/api/auth/customer/google", ctx -> loginGoogle(ctx, authService, true));
       app.get("/api/auth/me", ctx -> me(ctx, authService));
 
       app.get("/api/cashier/home", ctx -> roleHome(ctx, authService, "cashier"));
       app.get("/api/manager/home", ctx -> roleHome(ctx, authService, "manager"));
+
+      app.get("/api/manager/inventory", ctx -> inventory(ctx, authService, inventoryDao));
 
       app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao));
 
@@ -104,12 +109,12 @@ public class App {
       }
    }
 
-   private static void loginGoogle(Context ctx, AuthService authService) {
+   private static void loginGoogle(Context ctx, AuthService authService, boolean customer) {
       try {
          Map<?, ?> body = ctx.bodyAsClass(Map.class);
          Object rawToken = body == null ? null : body.get("idToken");
          String idToken = rawToken == null ? null : String.valueOf(rawToken);
-         ctx.json(authService.loginWithGoogle(idToken));
+         ctx.json(customer ? authService.loginCustomerWithGoogle(idToken) : authService.loginWithGoogle(idToken));
       } catch (AuthException e) {
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", e.getMessage());
@@ -122,7 +127,7 @@ public class App {
    }
 
    private static void me(Context ctx, AuthService authService) throws AuthException {
-      Employee employee = authService.requireEmployee(ctx.header("Authorization"));
+      Employee employee = authService.requireUser(ctx.header("Authorization"));
       Map<String, Object> body = new HashMap<String, Object>();
       body.put("user", AuthService.userMap(employee));
       ctx.json(body);
@@ -142,6 +147,23 @@ public class App {
       body.put("message", "Welcome to the " + requiredRole + " POS.");
       body.put("user", AuthService.userMap(employee));
       ctx.json(body);
+   }
+
+   private static void inventory(Context ctx, AuthService authService, InventoryDao inventoryDao)
+      throws AuthException {
+      Employee employee = authService.requireEmployee(ctx.header("Authorization"));
+      if (!"manager".equalsIgnoreCase(employee.getRole())) {
+         ctx.status(403).json(Map.of("error", "Only a manager can view inventory."));
+         return;
+      }
+
+      ctx.header("Cache-Control", "no-store");
+      try {
+         ctx.json(inventoryDao.loadAll());
+      } catch (Exception e) {
+         ctx.status(500).json(Map.of("error", "Could not load inventory. Please try again."));
+         System.err.println("Could not load inventory: " + e.getMessage());
+      }
    }
 
    /**

@@ -71,3 +71,20 @@ Employee login lives at `/login`. Cashier/manager homes are protected routes.
 2. Render: create Web Service from this repo, root `src/api`, Docker runtime, set `DATABASE_URL`.
 3. Vercel: import repo, root `src/web`, set `VITE_API_URL` to the Render URL, redeploy.
 4. Update the Live Links above with the Vercel and Render URLs.
+
+## Customer menu browsing
+
+Open `/customer/login` and sign in with Google, then browse `/menu`.
+Customer Google accounts do not need an employee record. The API issues a
+customer-only browsing session; no customer database row is created yet.
+Employee-only inventory and order endpoints reject customer sessions.
+
+The menu reads available items from the live database through `GET /api/menu`.
+The browse view shows item names and prices with category filters and no cart or
+order controls. The menu API remains public for existing menu integrations.
+
+To verify: sign in as a customer, check that `/menu` lists available database
+items and prices, and confirm no Add or checkout buttons appear. Sign out and
+open `/menu` again; it should redirect to customer sign-in. Confirm a customer
+session cannot open `/manager` or `/cashier` or use their protected APIs.
+Local preview still requires Google OAuth configuration and a running API.
