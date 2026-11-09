@@ -12,6 +12,7 @@ Project 3 hosts externally, so Postgres lives on **Neon** (not the TAMU VPN host
 psql "$DATABASE_URL" -f db/schema.sql
 psql "$DATABASE_URL" -f db/seed-menu.sql
 psql "$DATABASE_URL" -f db/store.sql
+psql "$DATABASE_URL" -f db/seed-inventory.sql
 ```
 
 4. Put the same URL in Render as `DATABASE_URL` (and optionally in `local/db.txt` for laptop runs — see below).
