@@ -87,4 +87,4 @@
 - Keep a dedicated cashier test Google account in Neon from day one
 - Update `sprint1-meetings.md` / board status the same day as stand-ups, not at the end
 - Create the GitHub Release as soon as `main` is demo-ready, not after the live demo
-- After user study 1, refine Sprint 2 epics (#8–#10) with concrete acceptance criteria before planning
+- After user study 1, refine Sprint 2 into concrete stories before building. Done as #21–#26 (23 points). Record the study in `sprint-materials/user-study-1.md` and point #26 at the real design moves.
