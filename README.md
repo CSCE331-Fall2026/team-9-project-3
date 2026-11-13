@@ -10,7 +10,7 @@ A publicly hosted web POS and ordering system for Panda Express that supports ca
 
 ## Current sprint
 
-Sprint 2 is planned and not built yet. The groomed stories are GitHub issues #21–#26 (23 points; Sprint 1 finished 26). The demo target is still a customer placing a pickup order and two people creating or joining a shared cart by code. User study 1 notes live in `sprint-materials/user-study-1.md`. The board link above is the live backlog.
+Sprint 2 is planned and not built yet. The groomed stories are GitHub issues #21–#26 (26 points, same as Sprint 1 velocity). That includes a clearer customer menu with item pictures (#26). The demo target is still a customer placing a pickup order and two people creating or joining a shared cart by code. User study 1 notes live in `sprint-materials/user-study-1.md`. The board link above is the live backlog.
 
 ## Roles
 | Name | Role |

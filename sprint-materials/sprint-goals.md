@@ -13,7 +13,7 @@ should be your final product.*
 ## Sprint 2
 **Goal:** Add the customer ordering path and begin group/shared cart ordering, incorporating feedback from user study 1.
 **Outcome:** Demo a customer browsing and placing an order, plus create/join a shared cart by code (even if multi-user sync is still limited).
-**Backlog:** Issues #21–#26, 23 story points. Sprint 1 velocity was 26 planned and 26 completed, so 23 is inside that pace. Group checkout stays in Sprint 3 (#11).
+**Backlog:** Issues #21–#26, 26 story points (matches Sprint 1 velocity of 26). #26 now includes customer menu pictures from the Sprint 2 kickoff. Group checkout stays in Sprint 3 (#11).
 
 ## Sprint 3
 **Goal:** Finish group/shared cart ordering, meet WCAG 2.2 Level AA, and ship the final product with manager capabilities and polish from user study 2.

@@ -233,7 +233,7 @@ Prioritize after the results summary exists. Each move needs evidence (participa
 
 ### Backlog already groomed (not a substitute for the table above)
 
-Sprint 1 velocity was 26 points planned and 26 completed. Sprint 2 is sized at **23 points**, under that velocity.
+Sprint 1 velocity was 26 points planned and 26 completed. Sprint 2 is sized at **26 points** (same pace).
 
 | Issue | Story | Points | Why it is in Sprint 2 |
 |-------|--------|--------|------------------------|
@@ -242,7 +242,7 @@ Sprint 1 velocity was 26 points planned and 26 completed. Sprint 2 is sized at *
 | #23 | Create shared cart + join code | 3 | Sprint goal: start the novel feature. |
 | #24 | Join shared cart and add items | 5 | Sprint goal: a second customer can join. Group submit stays in Sprint 3 (#11). |
 | #25 | Manager sales summary | 3 | Manager can only view inventory today. Separate from the inventory screen. |
-| #26 | Clearer customer menu and cart labels | 2 | Slot for study-1 wording fixes. Rewrite the acceptance criteria to match the design-move table once sessions exist. |
+| #26 | Clearer customer menu + item pictures | 5 | PM / kickoff feedback: customer screen needs pics and clearer browse layout. Also absorbs study-1 label fixes. |
 
 Closed as duplicates before this plan: #8, #9, #10, #14, #18, #19, #20. Sprint 3 epics #11–#13 stay epic placeholders.
 
