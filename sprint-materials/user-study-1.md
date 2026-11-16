@@ -141,8 +141,8 @@ Cross-session scoreboard (same 1–5 scale):
 
 | Priority | Proposed change | Evidence / justification | Sprint impact |
 |----------|-----------------|--------------------------|---------------|
-| 1 | Ship customer cart + submit, and say clearly when the menu is still browse-only until that lands | A (score 2; thought the app was unfinished), B (looked for a plus button), C (“Add to Cart” / banner idea), D (clicked items expecting a cart). All four expected ordering. | #21 personal cart, #22 submit order; short browse-only copy until those ship. Matches the Sprint 2 demo. |
+| 1 | Ship customer cart + submit, and say clearly when the menu is still browse-only until that lands | A (score 2; thought the app was unfinished), B (looked for a plus button), C (“Add to Cart” / banner idea), D (clicked items expecting a cart). All four expected ordering. | #21 personal cart, #22 submit order, #27 link order to customer account; short browse-only copy until those ship. Matches the Sprint 2 demo. |
 | 2 | Put food pictures on the customer menu and make the cards easier to scan | A (“feels like a price list”; wants photos), C (text-only slower in a rush; wants pics). B and D still expected normal add-to-bag ordering. | #26 customer menu pics + clearer layout. |
 | 3 | Make “New order” / empty order state obvious for cashiers; clarify manager inventory is view-only | A (missed New order ~45s), B (button-order confusion), C (empty panel pause), D (unsure if inventory editable). | Small cashier empty-state copy while building #21–#22; optional inventory helper text near #25. |
 
-Sprint 2 backlog after these moves: issues #21–#26 (26 points; Sprint 1 velocity was also 26). Group checkout stays in Sprint 3 (#11).
+Sprint 2 backlog after these moves: issues #21–#27 (28 points; Sprint 1 velocity was 26). Owners: Jack #21+#26, Nevin #24, Dishant #23+#25, Ayaan #22+#27. Group checkout stays in Sprint 3 (#11).
