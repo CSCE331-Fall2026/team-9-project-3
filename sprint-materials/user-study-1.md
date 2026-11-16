@@ -76,32 +76,35 @@ Copy the block below once per participant. Keep the label. Write short quotes in
 ### Participant A — cashier
 
 - **Session owner:** Jack Berry
-- **Date:**
-- **Task completed without help:** yes / partial / no
+- **Date:** 2026-11-15
+- **Task completed without help:** partial
 
 **Likert**
 
 | # | Score (1–5 or N/A) | Comment |
 |---|--------------------|---------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
+| 1 | 5 | Found Google sign-in quickly and completed login without help. |
+| 2 | 4 | Knew it was the cashier POS once the menu and order panel appeared; unsure for a moment whether manager was a separate login. |
+| 3 | 5 | Found Orange Chicken and Fried Rice by category tabs and read prices out loud. |
+| 4 | 3 | Did not notice “New order” at first; tried to tap menu items before an order existed. Subtotal made sense after the first add. |
 | 5 | N/A | |
-| 6 | | |
-| 7 | | |
+| 6 | 2 | As a customer, kept looking for Add / checkout and thought the app was broken until told browse-only is intentional. |
+| 7 | 3 | Wanted clearer empty-order and customer-browse messaging so the next step is obvious. |
 
 **Quotes**
 
-- Q1:
-- Q2:
-- Q3:
-- Q4:
-- Q5:
+- Q1: "The first thing I saw was Sign in with Google, so I assumed that was the door into the POS."
+- Q2: "I hesitated on the cashier screen because the order side looked empty and I wasn't sure if I was supposed to pick food first or start an order first."
+- Q3: "On the customer menu I expected pictures of the food and a button to add something to a bag. Right now it feels like a price list."
+- Q4: "In a rush I'd lose time hunting for New order and scanning text-only cards with no photos."
+- Q5: "Put photos on the customer menu and a short line that says ordering isn't available yet, plus make New order harder to miss for cashiers."
 
 **Observed behavior**
 
--
+- Signed in as cashier on the first try; landed on cashier menu with the order panel visible but empty.
+- Clicked two entrees before starting an order; no lines appeared until after New order, then Orange Chicken and Fried Rice added and subtotal read correctly.
+- After sign-out / customer sign-in, scrolled `/menu`, used a category tab, clicked items expecting a cart; no add controls appeared. Asked whether the site was unfinished.
+- Brief help given once: pointed at New order after ~45 seconds of tapping items with no effect.
 
 ---
 
