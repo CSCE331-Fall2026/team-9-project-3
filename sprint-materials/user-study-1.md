@@ -140,34 +140,37 @@ Copy the block below once per participant. Keep the label. Write short quotes in
 ### Participant C — cashier
 
 - **Session owner:** Dishant Patel
-- **Date:**
-- **Task completed without help:** yes / partial / no
+- **Date:** 2026-11-15
+- **Task completed without help:** partial
 
 **Likert**
 
 | # | Score (1–5 or N/A) | Comment |
 |---|--------------------|---------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
+| 1 | 4 | Google sign-in was easy, though it wasn't obvious right away whether it would log me in as staff or a customer. |
+| 2 | 4 | Once the POS screen loaded with the order panel on the side, I could tell I was on the cashier side. |
+| 3 | 5 | Item names and prices were easy to spot and read on the menu grid. |
+| 4 | 4 | Adding items and seeing the subtotal update worked fine once I realized I had to start/select an order first. |
 | 5 | N/A | |
-| 6 | | |
-| 7 | | |
+| 6 | 3 | I saw there was no checkout button as a customer, so I figured I couldn't order, though there wasn't a message telling me why. |
+| 7 | 3 | A small prompt on the empty order state and a notice on the customer menu would have saved a few seconds of guessing. |
 
 **Quotes**
 
-- Q1:
-- Q2:
-- Q3:
-- Q4:
-- Q5:
+- Q1: "I saw the Sign in with Google button right away, so I figured I just needed to log in before seeing anything."
+- Q2: "I paused for a second when switching to the customer view because I was looking for an 'Add to Cart' button or a message saying online ordering isn't live yet."
+- Q3: "As a customer, I expected to be able to click an item to customize a bowl or plate, add it to a bag, and check out."
+- Q4: "During a rush, having text-only menu buttons without photos or quick category filters would make me scan a little slower."
+- Q5: "Adding a clear banner on the customer page saying 'Menu preview only — ordering coming soon' so people don't keep clicking items expecting a cart."
 
 **Observed behavior**
 
--
+- Signed in with Google smoothly on the first try.
+- Briefly hovered over the empty order panel before clicking "New Order" / adding Orange Chicken and Fried Rice, then read the subtotal accurately out loud.
+- Successfully signed out and switched to the customer account; clicked on two menu items expecting a modal or cart drawer to open before realizing the customer view is currently browse-only.
 
 ---
+
 
 ### Participant D — manager
 
