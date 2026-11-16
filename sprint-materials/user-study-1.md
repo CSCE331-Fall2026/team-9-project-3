@@ -181,7 +181,7 @@ Copy the block below once per participant. Keep the label. Write short quotes in
 - **Session owner:** Ayaan Budhwani
 - **Date:** 2026-11-15
 - **Task completed without help:** partial
-
+ 
 **Likert**
 
 | # | Score (1–5 or N/A) | Comment |
