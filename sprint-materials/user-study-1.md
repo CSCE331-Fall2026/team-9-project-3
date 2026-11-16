@@ -111,35 +111,38 @@ Copy the block below once per participant. Keep the label. Write short quotes in
 ### Participant B — cashier
 
 - **Session owner:** Nevin Kalloor
-- **Date:**
-- **Task completed without help:** yes / partial / no
+- **Date:** 2026-11-15
+- **Task completed without help:** partial
 
 **Likert**
 
 | # | Score (1–5 or N/A) | Comment |
 |---|--------------------|---------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | | |
+| 1 | 5 | The google sign in was easier than a normal sign in since memorizing a password was not necessary |
+| 2 | 3 | I could tell I was in the cashier panel but I had to look around a bit. Instead of cashier being big and bold it stated something else, but it could have been any interface at that point|
+| 3 | 5 | I was able to find any item and their correlated price easily due to the category tabs and the search bar|
+| 4 | 4| Was initially confused about making an order and then the order of what buttons to press, but was able to understand after a bit of practice|
 | 5 | N/A | |
-| 6 | | |
-| 7 | | |
+| 6 | 3 | I tried to find the plus sign like food apps normally use them to add food to a cart but could not find it. I was then told I was only able to look through the menu|
+| 7 | 4 | Most of the tasks were self-explanatory, although it would help if there were pop ups to describe mini tasks |
 
 **Quotes**
 
-- Q1:
-- Q2:
-- Q3:
-- Q4:
-- Q5:
+- Q1: It was obvious that a sign in was needed for the very first task and having google made it a lot easier to sign in with an account rather than filling details on my own.
+- Q2: I hesitated a little bit when I saw the cashier interface for the first time, as I didn't know if it was the right interface initially since there was no big bold word saying cashier interface but rather I had to use context clues like "return to cashier homepage".
+- Q3: As a customer, I expected to add orders myself since most restaurant apps have that feature in their own interface, but I was only able to browse.
+- Q4: If I was working in a rush, having to scroll through the entire menu or search stuff up would take time, rather than just having everything on the menu listed at once
+- Q5: One change that would help me the most is have popups to have instructions for mini tasks whenever I am going through the application.
 
 **Observed behavior**
 
--
+- Signed in easily with google
+- Tried to click on the menu items to add to cart as customer when they couldn't
+- Had to briefly give a little help when making orders and adding items to order
+- Switching between different interfaces was easy for them
+- Tried to break website, but could not get any refresh errors
 
 ---
-
 ### Participant C — cashier
 
 - **Session owner:** Dishant Patel
