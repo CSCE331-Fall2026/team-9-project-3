@@ -175,35 +175,42 @@ Copy the block below once per participant. Keep the label. Write short quotes in
 ---
 
 
+
 ### Participant D — manager
 
 - **Session owner:** Ayaan Budhwani
-- **Date:**
-- **Task completed without help:** yes / partial / no
+- **Date:** 2026-11-15
+- **Task completed without help:** partial
 
 **Likert**
 
 | # | Score (1–5 or N/A) | Comment |
 |---|--------------------|---------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-| 4 | N/A | |
-| 5 | | |
-| 6 | | |
-| 7 | | |
+| 1 | 5 | Signing in with Google was easy, and the login process was straightforward. |
+| 2 | 4 | I could tell I was on the manager page, but it took a few seconds to understand the layout. |
+| 3 | 5 | The menu items and prices were clearly displayed and easy to find. |
+| 4 | N/A | Cashier-only question. |
+| 5 | 4 | The inventory screen was organized, but the stock levels could have been explained more clearly. |
+| 6 | 3 | I could browse the customer menu, but I initially expected to be able to place an order. |
+| 7 | 4 | Most tasks were easy to complete, but some additional instructions would have been helpful. |
 
 **Quotes**
 
-- Q1:
-- Q2:
-- Q3:
-- Q4:
-- Q5:
+- Q1: "I thought I needed to sign in first and then use the manager dashboard to check inventory and manage the store."
+- Q2: "I hesitated on the inventory page because I wasn't sure if I could update the stock or just view it."
+- Q3: "I expected to select food, add it to a cart, and place an order, but I could only browse the menu."
+- Q4: "If the store was busy, having to look through the inventory without a quick way to find specific items could slow me down."
+- Q5: "I would add clearer buttons and instructions, especially on the inventory page and customer menu, so users know what they can do."
 
 **Observed behavior**
 
--
+- Signed in successfully using Google and navigated to the manager inventory screen.
+- Spent some time reviewing the inventory before understanding the displayed information.
+- Initially seemed unsure whether inventory quantities could be edited or only viewed.
+- Signed out and switched to the customer account without assistance.
+- Clicked on menu items expecting to add them to a cart or begin an order.
+- Completed most tasks without assistance but expressed confusion about the customer ordering functionality.
+- Suggested clearer inventory labels and a notice explaining that customer ordering is not yet available.
 
 ---
 
