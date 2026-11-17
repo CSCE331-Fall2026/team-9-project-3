@@ -3,7 +3,7 @@ import './menu.css'
 import './order.css'
 
 // One menu item. `variant` lets the customer and cashier pages share this component.
-// If `onAdd` is given (cashier ordering), an Add button is shown.
+// If `onAdd` is given, an Add button is shown.
 function MenuItemCard({ item, variant = 'customer', onAdd, addDisabled = false }) {
   const detail = describeItem(item)
 
