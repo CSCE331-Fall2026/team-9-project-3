@@ -32,7 +32,7 @@ export default function LoginPage({ customer = false }) {
         <p className="brand">Team 9 · Panda Express POS</p>
         <h1>{customer ? 'Customer' : 'Employee'} sign in</h1>
         <p className="lede">
-          {customer ? 'Use your Google account to browse available menu items and prices.' : 'Use your Google account. Access is limited to emails listed as cashier or manager.'}
+          {customer ? 'Use your Google account to browse the menu and add items to your cart.' : 'Use your Google account. Access is limited to emails listed as cashier or manager.'}
         </p>
         <div className="actions">
           <Link className="text-link" to={customer ? '/login' : '/customer/login'}>

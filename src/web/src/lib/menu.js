@@ -1,11 +1,14 @@
 // Seed data has a placeholder row in category "Category" (the Appetizer header). Not a real item.
 const HIDDEN_CATEGORIES = ['Category']
 
-// Entrees are priced by the plate/bowl size, so their base price is 0.00.
+// Standard entrees are included with a meal. A higher base price is the upcharge.
 export function formatPrice(item) {
   const price = Number(item.basePrice)
   if (item.category === 'Entree' && price === 0) {
-    return 'Included with plate/bowl'
+    return 'Included'
+  }
+  if (item.category === 'Entree' && price > 0) {
+    return `+$${price.toFixed(2)}`
   }
   return `$${price.toFixed(2)}`
 }
@@ -35,7 +38,16 @@ export function visibleItems(items) {
   return items.filter((item) => !HIDDEN_CATEGORIES.includes(item.category))
 }
 
-// Unique category names in the order they first appear (API already sorts by category).
+const CATEGORY_ORDER = ['Size', 'Entree', 'Side', 'Appetizer', 'Drink']
+
+// Sizes first, then what goes in the meal, then add-ons.
 export function getCategories(items) {
-  return [...new Set(items.map((item) => item.category))]
+  const present = new Set(items.map((item) => item.category))
+  const ordered = CATEGORY_ORDER.filter((category) => present.has(category))
+  for (const category of present) {
+    if (!ordered.includes(category)) {
+      ordered.push(category)
+    }
+  }
+  return ordered
 }

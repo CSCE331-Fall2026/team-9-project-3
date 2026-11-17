@@ -20,6 +20,7 @@ import pos.api.db.Database;
 import pos.api.inventory.InventoryDao;
 import pos.api.menu.MenuDao;
 import pos.api.menu.MenuItem;
+import pos.api.order.MealSelection;
 import pos.api.order.OrderDao;
 import pos.api.order.OrderLine;
 
@@ -168,8 +169,9 @@ public class App {
 
    /**
     * Saves a new cashier order.
-    * Body: {"items": [{"menuItemId": 2, "quantity": 1}, ...]}
-    * Reply: {"orderId": 91501, "subtotal": 13.50, "lineCount": 2}
+    * Body: {"meals":[{"sizeId":2,"sideIds":[20],"entreeIds":[8,14]}],
+    *        "items":[{"menuItemId":4,"quantity":1}]}
+    * Reply: {"orderId": 91501, "subtotal": 13.50, "lineCount": 5}
     */
    private static void createOrder(Context ctx, AuthService authService, OrderDao orderDao)
       throws AuthException {
@@ -182,8 +184,10 @@ public class App {
       }
 
       try {
-         List<OrderLine> lines = readOrderLines(ctx);
-         ctx.status(201).json(orderDao.createOrder(lines));
+         Map<?, ?> body = ctx.bodyAsClass(Map.class);
+         List<MealSelection> meals = readMeals(body);
+         List<OrderLine> extras = readOrderLines(body);
+         ctx.status(201).json(orderDao.createOrder(extras, meals));
       } catch (IllegalArgumentException e) {
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", e.getMessage());
@@ -195,15 +199,58 @@ public class App {
       }
    }
 
-   // Turns the JSON "items" list into OrderLine objects.
-   private static List<OrderLine> readOrderLines(Context ctx) {
-      Map<?, ?> body = ctx.bodyAsClass(Map.class);
-      Object rawItems = body == null ? null : body.get("items");
-      if (!(rawItems instanceof List)) {
-         throw new IllegalArgumentException("Send an \"items\" list.");
+   private static List<MealSelection> readMeals(Map<?, ?> body) {
+      Object rawMeals = body == null ? null : body.get("meals");
+      List<MealSelection> meals = new ArrayList<MealSelection>();
+      if (rawMeals == null) {
+         return meals;
+      }
+      if (!(rawMeals instanceof List)) {
+         throw new IllegalArgumentException("\"meals\" must be a list.");
       }
 
+      for (Object rawMeal : (List<?>) rawMeals) {
+         if (!(rawMeal instanceof Map)) {
+            throw new IllegalArgumentException("Each meal needs a sizeId, sideIds, and entreeIds.");
+         }
+         Map<?, ?> meal = (Map<?, ?>) rawMeal;
+         Object sizeId = meal.get("sizeId");
+         if (!(sizeId instanceof Number)) {
+            throw new IllegalArgumentException("Each meal needs a sizeId.");
+         }
+         meals.add(new MealSelection(
+            ((Number) sizeId).intValue(),
+            readIdList(meal.get("sideIds"), "sideIds"),
+            readIdList(meal.get("entreeIds"), "entreeIds")));
+      }
+      return meals;
+   }
+
+   private static List<Integer> readIdList(Object raw, String label) {
+      if (!(raw instanceof List)) {
+         throw new IllegalArgumentException("Each meal needs " + label + ".");
+      }
+      List<Integer> ids = new ArrayList<Integer>();
+      for (Object value : (List<?>) raw) {
+         if (!(value instanceof Number)) {
+            throw new IllegalArgumentException(label + " must be menu item ids.");
+         }
+         ids.add(Integer.valueOf(((Number) value).intValue()));
+      }
+      return ids;
+   }
+
+   // Turns the JSON "items" list into extras (apps, drinks, a la carte sides).
+   private static List<OrderLine> readOrderLines(Map<?, ?> body) {
+      Object rawItems = body == null ? null : body.get("items");
       List<OrderLine> lines = new ArrayList<OrderLine>();
+      if (rawItems == null) {
+         return lines;
+      }
+      if (!(rawItems instanceof List)) {
+         throw new IllegalArgumentException("\"items\" must be a list.");
+      }
+
       for (Object rawItem : (List<?>) rawItems) {
          if (!(rawItem instanceof Map)) {
             throw new IllegalArgumentException("Each item needs a menuItemId and quantity.");

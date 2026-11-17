@@ -10,4 +10,5 @@
 | 2026-11-08 | Cursor | Sprint 1 docs: drafted `STYLE.md` (adapted from Project 2 style for Java + React/Vite). |
 | 2026-11-08 | Claude | helped generate spring 1 burnup chart from merge dates (GitHub board closed all S1 issues on Nov 4, so the live chart was wrong).
 | 2026-11-12 | Claude | User study 1 format help 
-| 2026-11-15 | Claude | Helped analyze results
+| 2026-11-15 | Claude | Helped analyze results |
+| 2026-11-17 | CLaude | Helped create the customer personal cart system and edited changelog
