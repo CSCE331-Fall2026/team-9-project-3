@@ -7,6 +7,7 @@ import CustomerMenu from './pages/CustomerMenu'
 import LoginPage from './pages/LoginPage'
 import RoleHome from './pages/RoleHome'
 import ManagerInventory from './pages/ManagerInventory'
+import ManagerSales from './pages/ManagerSales'
 import StatusPage from './pages/StatusPage'
 import './App.css'
 
@@ -53,6 +54,14 @@ function AppRoutes() {
         element={(
           <ProtectedRoute roles={['manager']}>
             <ManagerInventory />
+          </ProtectedRoute>
+        )}
+      />
+      <Route
+        path="/manager/sales"
+        element={(
+          <ProtectedRoute roles={['manager']}>
+            <ManagerSales />
           </ProtectedRoute>
         )}
       />

@@ -1,0 +1,35 @@
+.sales-page {
+  max-width: 900px;
+}
+
+.sales-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1.75rem;
+}
+
+.sales-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid #eadfd5;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.sales-stat__label {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.sales-stat__value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.sales-heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
