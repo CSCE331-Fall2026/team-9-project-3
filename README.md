@@ -58,6 +58,8 @@ Health: `http://localhost:8080/api/health` · Menu: `http://localhost:8080/api/m
 
 Create order (cashier sign-in required): `POST /api/orders` with `{"items": [{"menuItemId": 2, "quantity": 1}]}`. Returns the new `orderId` and `subtotal`.
 
+Sales summary (manager sign-in required): `GET /api/manager/sales-summary?days=7` returns the order count, sales total, average order, and latest orders for the last 1, 7, or 30 days. The page is `/manager/sales`.
+
 ### Web
 ```bash
 cd src/web
