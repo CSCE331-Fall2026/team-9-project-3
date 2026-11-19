@@ -1,14 +1,17 @@
 import { useAuth } from '../auth/AuthContext'
 import MenuGrid from '../components/MenuGrid'
+import SharedCartPanel from '../components/SharedCartPanel'
 import TicketPanel from '../components/TicketPanel'
 import { useCart } from '../hooks/useCart'
 import { useMenu } from '../hooks/useMenu'
+import { useSharedCart } from '../hooks/useSharedCart'
 
 // Customer builds meals here. Sending the order is a later story.
 function CustomerMenu() {
-  const { user, logout } = useAuth()
+  const { user, token, logout } = useAuth()
   const { items, loading, error } = useMenu()
   const cart = useCart(user?.email)
+  const sharedCart = useSharedCart(token)
   const actions = {
     removeSide: cart.removeSide,
     removeEntree: cart.removeEntree,
@@ -29,6 +32,8 @@ function CustomerMenu() {
           <button type="button" className="secondary" onClick={logout}>Sign out</button>
         </div>
       </header>
+
+      <SharedCartPanel sharedCart={sharedCart} />
 
       <TicketPanel
         ticket={cart.ticket}
