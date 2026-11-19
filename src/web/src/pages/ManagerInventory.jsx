@@ -42,6 +42,7 @@ export default function ManagerInventory() {
         <p className="lede">Review stock quantities and reorder levels. Refresh to load the latest inventory.</p>
         <div className="actions">
           <Link className="text-link" to="/manager">Manager home</Link>
+          <Link className="text-link" to="/manager/sales">Sales summary</Link>
           <button type="button" className="secondary" disabled={loading} onClick={() => setRefresh(value => value + 1)}>Refresh inventory</button>
           <button type="button" className="secondary" onClick={logout}>Sign out</button>
         </div>

@@ -53,6 +53,7 @@ export default function RoleHome({ role }) {
         <div className="actions">
           {role === 'cashier' ? <Link className="text-link" to="/cashier/menu">View menu</Link> : null}
           {role === 'manager' ? <Link className="text-link" to="/manager/inventory">View inventory</Link> : null}
+          {role === 'manager' ? <Link className="text-link" to="/manager/sales">Sales summary</Link> : null}
           <Link className="text-link" to="/status">Deploy status</Link>
           <button type="button" className="secondary" onClick={logout}>Sign out</button>
         </div>
