@@ -55,6 +55,37 @@ public class SharedCartDao {
    }
 
    /**
+    * The open shared cart with this join code, or null if there is none (wrong or closed code).
+    * Codes are matched ignoring case and spaces, so "k7qm4p " finds "K7QM4P".
+    */
+   public SharedCart findOpenByCode(String joinCode) {
+      if (joinCode == null) {
+         return null;
+      }
+      Connection conn = null;
+      try {
+         conn = Database.open();
+         PreparedStatement stmt = conn.prepareStatement(
+            SELECT_COLUMNS + " WHERE join_code = ? AND status = ?");
+         stmt.setString(1, joinCode.trim().toUpperCase());
+         stmt.setString(2, STATUS_OPEN);
+         ResultSet rows = stmt.executeQuery();
+
+         SharedCart found = null;
+         if (rows.next()) {
+            found = readRow(rows);
+         }
+         rows.close();
+         stmt.close();
+         return found;
+      } catch (Exception e) {
+         throw new RuntimeException("Could not look up that join code: " + e.getMessage(), e);
+      } finally {
+         Database.close(conn);
+      }
+   }
+
+   /**
     * Creates a new open shared cart with a join code no other cart is using.
     */
    public SharedCart create(String hostEmail, String hostName) {
