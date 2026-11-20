@@ -1,5 +1,6 @@
 import { formatMoney } from '../lib/order'
 import {
+  mealComplete,
   mealPrice,
   mealStatus,
   ticketSubtotal,
@@ -19,6 +20,7 @@ function TicketPanel({
 }) {
   const { meals, extras, activeMealId, error } = ticket
   const empty = meals.length === 0 && extras.length === 0
+  const incompleteMeal = pickup && meals.find((meal) => !mealComplete(meal))
 
   return (
     <section className="order-panel" aria-label={title}>
@@ -132,9 +134,16 @@ function TicketPanel({
       </p>
 
       {onSave ? (
-        <button type="button" onClick={onSave} disabled={saving || empty}>
-          {pickup ? (saving ? 'Submitting…' : 'Place pickup order') : (saving ? 'Saving…' : 'Save order')}
-        </button>
+        <>
+          {incompleteMeal ? (
+            <p className="order-empty" role="status">
+              Finish the {incompleteMeal.size.name} ({mealStatus(incompleteMeal).toLowerCase()}) or remove it.
+            </p>
+          ) : null}
+          <button type="button" onClick={onSave} disabled={saving || empty || Boolean(incompleteMeal)}>
+            {pickup ? (saving ? 'Submitting…' : 'Place pickup order') : (saving ? 'Saving…' : 'Save order')}
+          </button>
+        </>
       ) : null}
 
       {error ? <p className="error" role="alert">{error}</p> : null}
