@@ -75,7 +75,7 @@ public class GoogleTokenVerifier {
          name = email;
       }
 
-      return new GoogleIdentity(email, name);
+      return new GoogleIdentity(email, name, text(body, "sub"));
    }
 
    private static String text(JsonNode node, String field) {
@@ -86,10 +86,16 @@ public class GoogleTokenVerifier {
    public static final class GoogleIdentity {
       private final String email;
       private final String name;
+      private final String subject;
 
-      public GoogleIdentity(String email, String name) {
+      public GoogleIdentity(String email, String name, String subject) {
          this.email = email;
          this.name = name;
+         this.subject = subject;
+      }
+
+      public String getSubject() {
+         return subject;
       }
 
       public String getEmail() {

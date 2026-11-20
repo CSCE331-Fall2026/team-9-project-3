@@ -10,7 +10,7 @@ public class CustomerAuthTest {
          @Override
          public GoogleIdentity verify(String token) throws Exception {
             if (!"valid-google-token".equals(token)) throw new AuthException("Invalid Google token");
-            return new GoogleIdentity("customer@example.com", "Customer");
+            return new GoogleIdentity("customer@example.com", "Customer", "google-account-1");
          }
       };
       EmployeeDao employees = new EmployeeDao() {
@@ -25,6 +25,7 @@ public class CustomerAuthTest {
       Employee customer = auth.requireUser(bearer);
       check("customer".equals(customer.getRole()), "Customer role must survive session restore");
       check("customer@example.com".equals(customer.getEmail()), "Verified email must survive session restore");
+      check("google-account-1".equals(customer.getGoogleSubject()), "Google subject must survive session restore");
       expectRejected(() -> auth.requireEmployee(bearer));
       expectRejected(() -> auth.requireUser(null));
       expectRejected(() -> auth.requireUser(bearer + "tampered"));

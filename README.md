@@ -84,7 +84,7 @@ Employee login lives at `/login`. Cashier/manager homes are protected routes.
 
 Open `/customer/login` and sign in with Google, then browse `/menu`.
 Customer Google accounts do not need an employee record. The API issues a
-customer-only browsing session; no customer database row is created yet.
+customer session for browsing and checkout.
 Employee-only inventory and order endpoints reject customer sessions.
 
 The menu reads available items from the live database through `GET /api/menu`
@@ -95,14 +95,28 @@ plate, kids meal, or a la carte meal has a fixed number of sides and entrees.
 You cannot add extra entrees onto a full meal. Sides and regular entrees are
 included in the size price; premium entrees add their upcharge. Apps, drinks,
 and a side ordered on its own are charged separately. The personal cart stays
-in the browser session. Submitting it is a later story. Cashiers save the same
+in the browser session until a pickup order is placed. Cashiers save the same
 kind of meal. Needs `db/menu-images.sql` (or a fresh seed) for picture paths.
 The menu API remains public for existing menu integrations.
 
 To verify: sign in as a customer, confirm Browse cards show pictures, My cart
 and Shared cart are labeled separately, choose Plate, add 1 side and 2 entrees,
 and check the subtotal is the plate price plus any premium. A third entree
-should be refused. Refresh; the meal should still be there. There is no submit
-button. Sign in as a cashier and save the same kind of meal. Sign out and open
+should be refused. Refresh and confirm the meal is still there, then select
+**Place pickup order** and check the order number and subtotal. Sign in as a
+cashier and save the same kind of meal. Sign out and open
 `/menu` again; it should redirect to customer sign-in.
 Local preview still requires Google OAuth configuration and a running API.
+
+The API links pickup orders to the verified Google account ID in the signed
+customer session. Each account gets a customer record on its first successful
+pickup order. If the email already belongs to an older customer record without
+a Google account ID, checkout directs the customer to the store for help.
+
+For existing databases, run this migration before deploying the API:
+
+```bash
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/migrations/001-customer-google-subject.sql
+```
+
+Customers with sessions issued before this change need to sign in again.

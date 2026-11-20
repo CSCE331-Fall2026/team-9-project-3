@@ -5,3 +5,7 @@ import { apiPost } from './client'
 export function saveOrder(payload, token) {
   return apiPost('/api/orders', payload, token)
 }
+
+export function savePickupOrder(payload, token) {
+  return apiPost('/api/customer/orders', payload, token)
+}

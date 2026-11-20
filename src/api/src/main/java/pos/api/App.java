@@ -63,7 +63,8 @@ public class App {
       app.get("/api/manager/sales-summary",
          ctx -> salesSummary(ctx, authService, salesSummaryDao));
 
-      app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao));
+      app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao, false));
+      app.post("/api/customer/orders", ctx -> createOrder(ctx, authService, orderDao, true));
 
       app.post("/api/shared-carts", ctx -> createSharedCart(ctx, authService, sharedCartDao));
       app.get("/api/shared-carts/mine", ctx -> mySharedCart(ctx, authService, sharedCartDao));
@@ -212,34 +213,43 @@ public class App {
    }
 
    /**
-    * Saves a new cashier order.
+    * Saves a cashier order or personal pickup order.
     * Body: {"meals":[{"sizeId":2,"sideIds":[20],"entreeIds":[8,14]}],
     *        "items":[{"menuItemId":4,"quantity":1}]}
     * Reply: {"orderId": 91501, "subtotal": 13.50, "lineCount": 5}
     */
-   private static void createOrder(Context ctx, AuthService authService, OrderDao orderDao)
-      throws AuthException {
-      Employee employee = authService.requireEmployee(ctx.header("Authorization"));
-      if (!"cashier".equalsIgnoreCase(employee.getRole())) {
-         Map<String, String> error = new HashMap<String, String>();
-         error.put("error", "Only a cashier can create an order.");
-         ctx.status(403).json(error);
+   private static void createOrder(Context ctx, AuthService authService, OrderDao orderDao,
+      boolean pickup) throws AuthException {
+      String authorization = ctx.header("Authorization");
+      Employee user = pickup ? authService.requireUser(authorization)
+         : authService.requireEmployee(authorization);
+      String requiredRole = pickup ? "customer" : "cashier";
+      if (!requiredRole.equalsIgnoreCase(user.getRole())) {
+         ctx.status(403).json(Map.of("error", "Only a " + requiredRole + " can create this order."));
+         return;
+      }
+      if (pickup && user.getGoogleSubject() == null) {
+         throw new AuthException("Sign out and sign in again with Google to place a pickup order.");
+      }
+
+      Map<?, ?> body;
+      try {
+         body = ctx.bodyAsClass(Map.class);
+      } catch (Exception e) {
+         ctx.status(400).json(Map.of("error", "Send a valid JSON order."));
          return;
       }
 
       try {
-         Map<?, ?> body = ctx.bodyAsClass(Map.class);
          List<MealSelection> meals = readMeals(body);
          List<OrderLine> extras = readOrderLines(body);
-         ctx.status(201).json(orderDao.createOrder(extras, meals));
+         ctx.status(201).json(pickup ? orderDao.createPickupOrder(extras, meals, user)
+            : orderDao.createOrder(extras, meals));
       } catch (IllegalArgumentException e) {
-         Map<String, String> error = new HashMap<String, String>();
-         error.put("error", e.getMessage());
-         ctx.status(400).json(error);
+         ctx.status(400).json(Map.of("error", e.getMessage()));
       } catch (Exception e) {
-         Map<String, String> error = new HashMap<String, String>();
-         error.put("error", e.getMessage());
-         ctx.status(500).json(error);
+         ctx.status(500).json(Map.of("error", "Could not save the order. Please try again."));
+         System.err.println("Could not save the order: " + e.getMessage());
       }
    }
 
@@ -322,11 +332,11 @@ public class App {
          }
          Map<?, ?> meal = (Map<?, ?>) rawMeal;
          Object sizeId = meal.get("sizeId");
-         if (!(sizeId instanceof Number)) {
+         if (!(sizeId instanceof Integer)) {
             throw new IllegalArgumentException("Each meal needs a sizeId.");
          }
          meals.add(new MealSelection(
-            ((Number) sizeId).intValue(),
+            (Integer) sizeId,
             readIdList(meal.get("sideIds"), "sideIds"),
             readIdList(meal.get("entreeIds"), "entreeIds")));
       }
@@ -339,10 +349,10 @@ public class App {
       }
       List<Integer> ids = new ArrayList<Integer>();
       for (Object value : (List<?>) raw) {
-         if (!(value instanceof Number)) {
+         if (!(value instanceof Integer)) {
             throw new IllegalArgumentException(label + " must be menu item ids.");
          }
-         ids.add(Integer.valueOf(((Number) value).intValue()));
+         ids.add((Integer) value);
       }
       return ids;
    }
@@ -365,11 +375,11 @@ public class App {
          Map<?, ?> item = (Map<?, ?>) rawItem;
          Object menuItemId = item.get("menuItemId");
          Object quantity = item.get("quantity");
-         if (!(menuItemId instanceof Number) || !(quantity instanceof Number)) {
+         if (!(menuItemId instanceof Integer) || !(quantity instanceof Integer)) {
             throw new IllegalArgumentException("Each item needs a menuItemId and quantity.");
          }
-         lines.add(new OrderLine(((Number) menuItemId).intValue(),
-            ((Number) quantity).intValue()));
+         lines.add(new OrderLine((Integer) menuItemId,
+            (Integer) quantity));
       }
       return lines;
    }

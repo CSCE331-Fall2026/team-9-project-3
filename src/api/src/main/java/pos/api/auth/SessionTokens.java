@@ -35,6 +35,9 @@ public class SessionTokens {
          payload.put("email", employee.getEmail());
          payload.put("name", employee.getName());
          payload.put("role", employee.getRole());
+         if (employee.getGoogleSubject() != null) {
+            payload.put("googleSubject", employee.getGoogleSubject());
+         }
          payload.put("exp", Instant.now().getEpochSecond() + TTL_SECONDS);
          String body = B64.encodeToString(MAPPER.writeValueAsBytes(payload));
          String signature = B64.encodeToString(hmac(body));
@@ -69,7 +72,7 @@ public class SessionTokens {
          String email = String.valueOf(payload.get("email"));
          String name = String.valueOf(payload.get("name"));
          String role = String.valueOf(payload.get("role"));
-         return new Employee(id, email, name, role);
+         return new Employee(id, email, name, role, (String) payload.get("googleSubject"));
       } catch (AuthException e) {
          throw e;
       } catch (Exception e) {

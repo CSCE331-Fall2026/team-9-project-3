@@ -15,6 +15,7 @@ function TicketPanel({
   onClear,
   saving,
   savedOrder,
+  pickup = false,
 }) {
   const { meals, extras, activeMealId, error } = ticket
   const empty = meals.length === 0 && extras.length === 0
@@ -24,7 +25,7 @@ function TicketPanel({
       <div className="order-panel__head">
         <h2>{title}</h2>
         {onClear && !empty ? (
-          <button type="button" className="secondary" onClick={onClear}>
+          <button type="button" className="secondary" onClick={onClear} disabled={saving}>
             Clear cart
           </button>
         ) : null}
@@ -32,7 +33,8 @@ function TicketPanel({
 
       {savedOrder ? (
         <p className="order-saved" role="status">
-          Order #{savedOrder.orderId} saved. Subtotal {formatMoney(savedOrder.subtotal)}.
+          {pickup ? 'Pickup order' : 'Order'} #{savedOrder.orderId} {pickup ? 'placed' : 'saved'}.
+          {' '}Subtotal {formatMoney(savedOrder.subtotal)}.
         </p>
       ) : null}
 
@@ -48,7 +50,7 @@ function TicketPanel({
             className={active ? 'meal meal--active' : 'meal'}
           >
             <header className="meal__head">
-              <button type="button" className="meal__title" onClick={() => actions.setActiveMeal(meal.id)}>
+              <button type="button" className="meal__title" disabled={saving} onClick={() => actions.setActiveMeal(meal.id)}>
                 {meal.size.name}
                 {active ? ' · adding here' : ''}
               </button>
@@ -59,7 +61,7 @@ function TicketPanel({
               {meal.sides.map((item, index) => (
                 <li key={`side-${item.id}-${index}`}>
                   <span>Side: {item.name}</span>
-                  <button type="button" className="secondary" onClick={() => actions.removeSide(meal.id, index)}>
+                  <button type="button" className="secondary" disabled={saving} onClick={() => actions.removeSide(meal.id, index)}>
                     Remove
                   </button>
                 </li>
@@ -70,13 +72,13 @@ function TicketPanel({
                     Entree: {item.name}
                     {Number(item.basePrice) > 0 ? ` (+${formatMoney(item.basePrice)})` : ''}
                   </span>
-                  <button type="button" className="secondary" onClick={() => actions.removeEntree(meal.id, index)}>
+                  <button type="button" className="secondary" disabled={saving} onClick={() => actions.removeEntree(meal.id, index)}>
                     Remove
                   </button>
                 </li>
               ))}
             </ul>
-            <button type="button" className="secondary" onClick={() => actions.removeMeal(meal.id)}>
+            <button type="button" className="secondary" disabled={saving} onClick={() => actions.removeMeal(meal.id)}>
               Remove {meal.size.name}
             </button>
           </article>
@@ -92,6 +94,7 @@ function TicketPanel({
                 <button
                   type="button"
                   className="secondary"
+                  disabled={saving}
                   onClick={() => actions.changeExtra(line.item.id, line.quantity - 1)}
                   aria-label={`Decrease ${line.item.name}`}
                 >
@@ -101,6 +104,7 @@ function TicketPanel({
                 <button
                   type="button"
                   className="secondary"
+                  disabled={saving}
                   onClick={() => actions.changeExtra(line.item.id, line.quantity + 1)}
                   aria-label={`Increase ${line.item.name}`}
                 >
@@ -113,6 +117,7 @@ function TicketPanel({
               <button
                 type="button"
                 className="secondary"
+                disabled={saving}
                 onClick={() => actions.changeExtra(line.item.id, 0)}
               >
                 Remove
@@ -128,7 +133,7 @@ function TicketPanel({
 
       {onSave ? (
         <button type="button" onClick={onSave} disabled={saving || empty}>
-          {saving ? 'Saving…' : 'Save order'}
+          {pickup ? (saving ? 'Submitting…' : 'Place pickup order') : (saving ? 'Saving…' : 'Save order')}
         </button>
       ) : null}
 
