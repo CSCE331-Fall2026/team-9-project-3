@@ -87,18 +87,22 @@ Customer Google accounts do not need an employee record. The API issues a
 customer-only browsing session; no customer database row is created yet.
 Employee-only inventory and order endpoints reject customer sessions.
 
-The menu reads available items from the live database through `GET /api/menu`.
-The menu opens on sizes. A bowl, plate, bigger plate, kids meal, or a la carte
-meal has a fixed number of sides and entrees. You cannot add extra entrees onto
-a full meal. Sides and regular entrees are included in the size price; premium
-entrees add their upcharge. Apps, drinks, and a side ordered on its own are
-charged separately. The customer cart stays in the browser session. Submitting
-it is a later story. Cashiers save the same kind of meal.
+The menu reads available items from the live database through `GET /api/menu`
+(includes optional `imageUrl`). Customer `/menu` has three clear areas:
+**Browse** (picture cards), **My cart** (personal session cart), and
+**Shared cart** (group code). The menu opens on sizes. A bowl, plate, bigger
+plate, kids meal, or a la carte meal has a fixed number of sides and entrees.
+You cannot add extra entrees onto a full meal. Sides and regular entrees are
+included in the size price; premium entrees add their upcharge. Apps, drinks,
+and a side ordered on its own are charged separately. The personal cart stays
+in the browser session. Submitting it is a later story. Cashiers save the same
+kind of meal. Needs `db/menu-images.sql` (or a fresh seed) for picture paths.
 The menu API remains public for existing menu integrations.
 
-To verify: sign in as a customer, choose Plate, add 1 side and 2 entrees, and
-check the subtotal is the plate price plus any premium. A third entree should
-be refused. Refresh; the meal should still be there. There is no submit button.
-Sign in as a cashier and save the same kind of meal. Sign out and open `/menu`
-again; it should redirect to customer sign-in.
+To verify: sign in as a customer, confirm Browse cards show pictures, My cart
+and Shared cart are labeled separately, choose Plate, add 1 side and 2 entrees,
+and check the subtotal is the plate price plus any premium. A third entree
+should be refused. Refresh; the meal should still be there. There is no submit
+button. Sign in as a cashier and save the same kind of meal. Sign out and open
+`/menu` again; it should redirect to customer sign-in.
 Local preview still requires Google OAuth configuration and a running API.

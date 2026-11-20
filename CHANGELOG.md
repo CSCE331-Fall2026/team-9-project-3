@@ -4,6 +4,7 @@ All notable changes to the database schema and data set since Project 2 are docu
 
 ## Unreleased
 
+- **Menu pictures (Sprint 2, #26):** Added optional `menu_item.image_url` (`db/menu-images.sql`). Seed paths point at official Panda Express product photos under `src/web/public/menu/items/` (from PandaExpressWebsite / pandaexpress.ca / pandarg media assets). `GET /api/menu` returns `imageUrl`. The customer Browse grid shows item pictures; My cart and Shared cart stay separate labeled sections. Category placeholders cover missing/broken images.
 - **Meal pricing:** Cashier save now takes `meals` (size + sides + entrees) plus extra `items`. A side inside a meal is stored with `unit_price` 0 because the size price already includes it. Premium entrees keep their upcharge. No schema change.
 
 - **Hosting/DB decision:** App hosted externally (Vercel + Render). Project 2 Postgres on the TAMU engineering AWS server cannot be used (VPN-only). Migration target: **Neon**.
