@@ -4,6 +4,8 @@ import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import pos.api.db.Database;
@@ -49,6 +51,116 @@ public class SharedCartDao {
          return found;
       } catch (Exception e) {
          throw new RuntimeException("Could not look up your shared cart: " + e.getMessage(), e);
+      } finally {
+         Database.close(conn);
+      }
+   }
+
+   /**
+    * The open shared cart with this join code, or null if there is none (wrong or closed code).
+    * Codes are matched ignoring case and spaces, so "k7qm4p " finds "K7QM4P".
+    */
+   public SharedCart findOpenByCode(String joinCode) {
+      if (joinCode == null) {
+         return null;
+      }
+      Connection conn = null;
+      try {
+         conn = Database.open();
+         PreparedStatement stmt = conn.prepareStatement(
+            SELECT_COLUMNS + " WHERE join_code = ? AND status = ?");
+         stmt.setString(1, joinCode.trim().toUpperCase());
+         stmt.setString(2, STATUS_OPEN);
+         ResultSet rows = stmt.executeQuery();
+
+         SharedCart found = null;
+         if (rows.next()) {
+            found = readRow(rows);
+         }
+         rows.close();
+         stmt.close();
+         return found;
+      } catch (Exception e) {
+         throw new RuntimeException("Could not look up that join code: " + e.getMessage(), e);
+      } finally {
+         Database.close(conn);
+      }
+   }
+
+   /**
+    * Adds a menu item to a cart. Adding the same item again by the same person bumps the
+    * quantity instead of making a second line. Returns false if the item is not on the menu
+    * or is not available.
+    */
+   public boolean addItem(int cartId, int menuItemId, String email, String name) {
+      Connection conn = null;
+      try {
+         conn = Database.open();
+
+         // 1. Only items that are on the menu and available can be added.
+         PreparedStatement check = conn.prepareStatement(
+            "SELECT 1 FROM menu_item WHERE id = ? AND is_available = TRUE");
+         check.setInt(1, menuItemId);
+         ResultSet found = check.executeQuery();
+         boolean available = found.next();
+         found.close();
+         check.close();
+         if (!available) {
+            return false;
+         }
+
+         // 2. Add a new line, or add 1 to the quantity if this person already added this item.
+         // The unique index on (cart, item, person) makes this safe even if two taps arrive
+         // at the same moment.
+         PreparedStatement insert = conn.prepareStatement(
+            "INSERT INTO shared_cart_item (shared_cart_id, menu_item_id, added_by_email, "
+            + "added_by_name) VALUES (?, ?, ?, ?) "
+            + "ON CONFLICT (shared_cart_id, menu_item_id, LOWER(added_by_email)) "
+            + "DO UPDATE SET quantity = shared_cart_item.quantity + 1");
+         insert.setInt(1, cartId);
+         insert.setInt(2, menuItemId);
+         insert.setString(3, email);
+         insert.setString(4, name);
+         insert.executeUpdate();
+         insert.close();
+         return true;
+      } catch (Exception e) {
+         throw new RuntimeException("Could not add that item: " + e.getMessage(), e);
+      } finally {
+         Database.close(conn);
+      }
+   }
+
+   /**
+    * Every line in a cart, oldest first, with the item's name and current price.
+    */
+   public List<SharedCartItem> loadItems(int cartId) {
+      List<SharedCartItem> items = new ArrayList<SharedCartItem>();
+      Connection conn = null;
+      try {
+         conn = Database.open();
+         PreparedStatement stmt = conn.prepareStatement(
+            "SELECT i.id, i.menu_item_id, m.name, m.base_price, i.quantity, "
+            + "i.added_by_email, i.added_by_name "
+            + "FROM shared_cart_item i JOIN menu_item m ON m.id = i.menu_item_id "
+            + "WHERE i.shared_cart_id = ? ORDER BY i.id");
+         stmt.setInt(1, cartId);
+         ResultSet rows = stmt.executeQuery();
+         while (rows.next()) {
+            items.add(new SharedCartItem(
+               rows.getInt("id"),
+               rows.getInt("menu_item_id"),
+               rows.getString("name"),
+               rows.getDouble("base_price"),
+               rows.getInt("quantity"),
+               rows.getString("added_by_email"),
+               rows.getString("added_by_name")));
+         }
+         rows.close();
+         stmt.close();
+         return items;
+      } catch (Exception e) {
+         throw new RuntimeException("Could not load the cart items: " + e.getMessage(), e);
       } finally {
          Database.close(conn);
       }
