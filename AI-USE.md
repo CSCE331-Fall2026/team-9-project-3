@@ -14,4 +14,4 @@
 | 2026-11-17 | CLaude | Helped create the customer personal cart system and edited changelog
 | 2026-11-19 | Claude | Sprint 2 #23 shared cart: helped write `db/shared-cart.sql`, `SharedCartDao`, the two shared cart endpoints, and the "Order with friends" panel (useSharedCart, SharedCartPanel). Tested locally against Postgres and in Chrome before committing. |
 | 2026-11-19 | Claude | Sprint 2 #25 manager sales summary: helped write `SalesSummaryDao`, the `/api/manager/sales-summary` endpoint, and the Sales summary page (useSalesSummary, ManagerSales). Tested locally against Postgres and in Chrome before committing. |
-| 2026-11-19 | Cursor | Sprint 2 #26 clearer customer menu with pictures: helped add `image_url`, MenuItemCard layout, Browse / My cart / Shared cart labels, and swap in official Panda Express product photos under `public/menu/items/`. Tested API + Vite build locally. |
+| 2026-11-19 | Cursor | helped with menu image layout. |
