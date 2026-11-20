@@ -64,6 +64,7 @@ public class App {
       app.post("/api/shared-carts", ctx -> createSharedCart(ctx, authService, sharedCartDao));
       app.get("/api/shared-carts/mine", ctx -> mySharedCart(ctx, authService, sharedCartDao));
       app.post("/api/shared-carts/join", ctx -> joinSharedCart(ctx, authService, sharedCartDao));
+      app.get("/api/shared-carts/{code}", ctx -> viewSharedCart(ctx, authService, sharedCartDao));
 
       app.exception(AuthException.class, (e, ctx) -> {
          Map<String, String> error = new HashMap<String, String>();
@@ -273,6 +274,25 @@ public class App {
          Object rawCode = body == null ? null : body.get("joinCode");
          String code = rawCode == null ? "" : String.valueOf(rawCode);
          sendSharedCart(ctx, sharedCartDao, sharedCartDao.findOpenByCode(code));
+      } catch (Exception e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(500).json(error);
+      }
+   }
+
+   /**
+    * The current cart and its items, for refreshing or polling. Same reply as joining.
+    */
+   private static void viewSharedCart(Context ctx, AuthService authService,
+      SharedCartDao sharedCartDao) throws AuthException {
+      Employee customer = requireCustomer(ctx, authService);
+      if (customer == null) {
+         return;
+      }
+
+      try {
+         sendSharedCart(ctx, sharedCartDao, sharedCartDao.findOpenByCode(ctx.pathParam("code")));
       } catch (Exception e) {
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", e.getMessage());
