@@ -18,15 +18,15 @@ function SharedCartPanel({ sharedCart }) {
   }
 
   return (
-    <section className="order-panel shared-cart" aria-label="Order with friends">
-      <h2>Order with friends</h2>
+    <section className="order-panel shared-cart" aria-label="Shared cart">
+      <h2>Shared cart</h2>
 
       {loading ? <p role="status">Checking for your shared cart…</p> : null}
 
       {!loading && !cart ? (
         <>
           <p className="shared-cart__hint">
-            Make a shared cart and give the code to your friends so you can order together.
+            Separate from My cart. Make a shared cart and give friends the code so you can order together.
           </p>
           <button type="button" onClick={create} disabled={creating}>
             {creating ? 'Creating…' : 'Create shared cart'}
@@ -36,7 +36,7 @@ function SharedCartPanel({ sharedCart }) {
 
       {cart ? (
         <div aria-live="polite">
-          <p className="shared-cart__hint">Your shared cart is ready. Give friends this code:</p>
+          <p className="shared-cart__hint">Shared cart is ready (not My cart). Give friends this code:</p>
           <p className="shared-cart__code">{cart.joinCode}</p>
           <div className="shared-cart__actions">
             <button type="button" className="secondary" onClick={copyCode}>
