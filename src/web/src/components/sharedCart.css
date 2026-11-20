@@ -45,3 +45,36 @@
   font-family: ui-monospace, Menlo, Consolas, monospace;
   letter-spacing: 0.15em;
 }
+
+.shared-cart h3 {
+  margin: 1rem 0 0.4rem;
+  font-size: 1rem;
+}
+
+.shared-cart__items {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.shared-cart__items li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.shared-cart__by {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.shared-cart__add {
+  margin: 1rem 0 0.75rem;
+}
+
+.shared-cart__add label {
+  display: block;
+  margin-bottom: 0.4rem;
+}

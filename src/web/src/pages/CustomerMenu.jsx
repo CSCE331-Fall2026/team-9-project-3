@@ -35,7 +35,7 @@ function CustomerMenu() {
         </div>
       </header>
 
-      <SharedCartPanel sharedCart={sharedCart} shared={shared} />
+      <SharedCartPanel sharedCart={sharedCart} shared={shared} menuItems={items} />
 
       <TicketPanel
         ticket={cart.ticket}

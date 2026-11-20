@@ -1,16 +1,25 @@
 import { useState } from 'react'
+import { getCategories, visibleItems } from '../lib/menu'
 import './order.css'
 import './sharedCart.css'
 
 // "Order with friends" box. The host creates a shared cart and gets a code to give out.
-// A friend types that code to join the same cart. Neither one places an order.
-function SharedCartPanel({ sharedCart, shared }) {
+// A friend types that code to join the same cart. Everyone in the cart can add menu items,
+// and all the items show here. None of this places an order.
+function SharedCartPanel({ sharedCart, shared, menuItems }) {
   const { cart, loading, creating, error, create } = sharedCart
   const [copied, setCopied] = useState(false)
   const [codeInput, setCodeInput] = useState('')
+  const [pickedId, setPickedId] = useState('')
 
   const hosting = Boolean(cart) && !shared.joined
   const message = error || shared.error
+
+  // Sizes (Bowl, Plate, ...) only mean something inside a meal, so they are not offered here.
+  const addable = visibleItems(menuItems).filter(
+    (item) => item.available && item.category !== 'Size',
+  )
+  const addableCategories = getCategories(addable)
 
   async function copyCode() {
     try {
@@ -25,6 +34,13 @@ function SharedCartPanel({ sharedCart, shared }) {
     event.preventDefault()
     if (await shared.join(codeInput)) {
       setCodeInput('')
+    }
+  }
+
+  function submitAdd(event) {
+    event.preventDefault()
+    if (pickedId) {
+      shared.addItem(Number(pickedId))
     }
   }
 
@@ -91,6 +107,52 @@ function SharedCartPanel({ sharedCart, shared }) {
             {copied ? <span role="status">Copied!</span> : null}
           </div>
           <p className="shared-cart__note">No order has been placed yet.</p>
+        </div>
+      ) : null}
+
+      {shared.code ? (
+        <div>
+          <h3>Items in this cart</h3>
+          {shared.items.length === 0 ? (
+            <p className="shared-cart__note">Nothing added yet.</p>
+          ) : (
+            <ul className="shared-cart__items" aria-live="polite">
+              {shared.items.map((item) => (
+                <li key={item.id}>
+                  <span>{item.name} × {item.quantity}</span>
+                  <span className="shared-cart__by">
+                    added by {item.addedByName || item.addedByEmail}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <form className="shared-cart__add" onSubmit={submitAdd}>
+            <label htmlFor="shared-item">Add an item to this cart</label>
+            <div className="shared-cart__actions">
+              <select
+                id="shared-item"
+                value={pickedId}
+                onChange={(e) => setPickedId(e.target.value)}
+              >
+                <option value="">Choose an item…</option>
+                {addableCategories.map((category) => (
+                  <optgroup key={category} label={category}>
+                    {addable
+                      .filter((item) => item.category === category)
+                      .map((item) => (
+                        <option key={item.id} value={item.id}>{item.name}</option>
+                      ))}
+                  </optgroup>
+                ))}
+              </select>
+              <button type="submit" disabled={!pickedId || shared.adding}>
+                {shared.adding ? 'Adding…' : 'Add'}
+              </button>
+            </div>
+          </form>
+          <p className="shared-cart__note">The list refreshes every few seconds.</p>
         </div>
       ) : null}
 
