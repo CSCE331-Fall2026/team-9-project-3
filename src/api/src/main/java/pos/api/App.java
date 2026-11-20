@@ -25,6 +25,7 @@ import pos.api.menu.MenuItem;
 import pos.api.order.MealSelection;
 import pos.api.order.OrderDao;
 import pos.api.order.OrderLine;
+import pos.api.order.SalesSummaryDao;
 
 /**
  * Thin HTTP layer over Project 2 JDBC for Sprint 1 demos.
@@ -35,6 +36,7 @@ public class App {
       MenuDao menuDao = new MenuDao();
       OrderDao orderDao = new OrderDao();
       InventoryDao inventoryDao = new InventoryDao();
+      SalesSummaryDao salesSummaryDao = new SalesSummaryDao();
       SharedCartDao sharedCartDao = new SharedCartDao();
       AuthService authService = buildAuthService();
 
@@ -58,6 +60,8 @@ public class App {
       app.get("/api/manager/home", ctx -> roleHome(ctx, authService, "manager"));
 
       app.get("/api/manager/inventory", ctx -> inventory(ctx, authService, inventoryDao));
+      app.get("/api/manager/sales-summary",
+         ctx -> salesSummary(ctx, authService, salesSummaryDao));
 
       app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao));
 
@@ -154,6 +158,40 @@ public class App {
       body.put("message", "Welcome to the " + requiredRole + " POS.");
       body.put("user", AuthService.userMap(employee));
       ctx.json(body);
+   }
+
+   /**
+    * Order count and sales total for the last 1, 7, or 30 days, plus the latest orders.
+    * Example: GET /api/manager/sales-summary?days=7
+    * Reply: {"days": 7, "orderCount": 12, "salesTotal": 154.5, "averageOrder": 12.88,
+    *         "recentOrders": [{"id": 14, "orderType": "in-store", "status": "open",
+    *         "total": 10.5, "minutesAgo": 5}, ...]}
+    */
+   private static void salesSummary(Context ctx, AuthService authService,
+      SalesSummaryDao salesSummaryDao) throws AuthException {
+      Employee employee = authService.requireEmployee(ctx.header("Authorization"));
+      if (!"manager".equalsIgnoreCase(employee.getRole())) {
+         ctx.status(403).json(Map.of("error", "Only a manager can view the sales summary."));
+         return;
+      }
+
+      String rawDays = ctx.queryParam("days");
+      int days = 1;
+      if (rawDays != null && !rawDays.isBlank()) {
+         if (!rawDays.equals("1") && !rawDays.equals("7") && !rawDays.equals("30")) {
+            ctx.status(400).json(Map.of("error", "days must be 1, 7, or 30."));
+            return;
+         }
+         days = Integer.parseInt(rawDays);
+      }
+
+      ctx.header("Cache-Control", "no-store");
+      try {
+         ctx.json(salesSummaryDao.loadSummary(days));
+      } catch (Exception e) {
+         ctx.status(500).json(Map.of("error", "Could not load the sales summary. Please try again."));
+         System.err.println("Could not load sales summary: " + e.getMessage());
+      }
    }
 
    private static void inventory(Context ctx, AuthService authService, InventoryDao inventoryDao)

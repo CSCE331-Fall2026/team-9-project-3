@@ -60,6 +60,8 @@ Create order (cashier sign-in required): `POST /api/orders` with `{"items": [{"m
 
 Shared cart (customer sign-in required): `POST /api/shared-carts` creates one and returns its `joinCode` (or the open cart the customer already hosts). `GET /api/shared-carts/mine` returns that cart, or `null`. Needs `db/shared-cart.sql` loaded.
 
+Sales summary (manager sign-in required): `GET /api/manager/sales-summary?days=7` returns the order count, sales total, average order, and latest orders for the last 1, 7, or 30 days. The page is `/manager/sales`.
+
 ### Web
 ```bash
 cd src/web
