@@ -24,3 +24,8 @@ CREATE TABLE IF NOT EXISTS shared_cart_item (
 );
 
 CREATE INDEX IF NOT EXISTS shared_cart_item_cart_idx ON shared_cart_item (shared_cart_id);
+
+-- One line per person per menu item per cart. addItem relies on this: adding the same item
+-- again adds 1 to quantity instead of making a second row, even if two taps arrive together.
+CREATE UNIQUE INDEX IF NOT EXISTS shared_cart_item_one_per_person_idx
+  ON shared_cart_item (shared_cart_id, menu_item_id, LOWER(added_by_email));
