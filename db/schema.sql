@@ -6,7 +6,8 @@ CREATE TABLE customer (
   name VARCHAR(100) NOT NULL,
   phone VARCHAR(100),
   email VARCHAR(100) UNIQUE NOT NULL,
-  loyalty_points INT DEFAULT 0
+  loyalty_points INT DEFAULT 0,
+  google_subject TEXT UNIQUE
 );
 
 CREATE TABLE store (

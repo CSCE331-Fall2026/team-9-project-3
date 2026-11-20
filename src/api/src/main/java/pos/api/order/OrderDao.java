@@ -9,10 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pos.api.auth.Employee;
 import pos.api.db.Database;
 
 /**
- * JDBC writes for a new cashier order. Same idea as Project 2 OrderDao.submitOrder:
+ * JDBC writes for cashier and personal pickup orders. Same idea as Project 2 OrderDao.submitOrder:
  * the orders row and its order_item rows are saved together or not at all.
  */
 public class OrderDao {
@@ -40,6 +41,14 @@ public class OrderDao {
     * Premium entrees keep their upcharge. Loose entrees and sizes are rejected.
     */
    public SavedOrder createOrder(List<OrderLine> extras, List<MealSelection> meals) {
+      return createOrder(extras, meals, null);
+   }
+
+   public SavedOrder createPickupOrder(List<OrderLine> extras, List<MealSelection> meals, Employee customer) {
+      return createOrder(extras, meals, customer);
+   }
+
+   private SavedOrder createOrder(List<OrderLine> extras, List<MealSelection> meals, Employee customer) {
       boolean noExtras = extras == null || extras.isEmpty();
       boolean noMeals = meals == null || meals.isEmpty();
       if (noExtras && noMeals) {
@@ -69,8 +78,10 @@ public class OrderDao {
          }
          subtotal = Math.round(subtotal * 100.0) / 100.0;
 
+         Integer customerId = customer == null ? null : findOrCreateCustomer(conn, customer);
+         lockForIdAllocation(conn, "orders, order_item");
          int orderId = nextId(conn, "orders");
-         insertOrder(conn, orderId, subtotal);
+         insertOrder(conn, orderId, subtotal, customerId);
          insertOrderItems(conn, orderId, priced);
 
          conn.commit();
@@ -153,18 +164,46 @@ public class OrderDao {
       return item;
    }
 
-   private void insertOrder(Connection conn, int orderId, double subtotal) throws Exception {
+   private int findOrCreateCustomer(Connection conn, Employee customer) throws Exception {
+      lockForIdAllocation(conn, "customer");
+      try (PreparedStatement stmt = conn.prepareStatement(
+         "SELECT id FROM customer WHERE google_subject = ?")) {
+         stmt.setString(1, customer.getGoogleSubject());
+         try (ResultSet rows = stmt.executeQuery()) {
+            if (rows.next()) {
+               return rows.getInt("id");
+            }
+         }
+      }
+
+      try (PreparedStatement stmt = conn.prepareStatement(
+         "INSERT INTO customer (id, name, email, google_subject) VALUES (?, LEFT(?, 100), ?, ?) "
+         + "ON CONFLICT (email) DO NOTHING RETURNING id")) {
+         stmt.setInt(1, nextId(conn, "customer"));
+         stmt.setString(2, customer.getName());
+         stmt.setString(3, customer.getEmail());
+         stmt.setString(4, customer.getGoogleSubject());
+         try (ResultSet rows = stmt.executeQuery()) {
+            if (rows.next()) {
+               return rows.getInt("id");
+            }
+         }
+      }
+      throw new IllegalArgumentException("This email already has a customer record. Contact the store for help.");
+   }
+
+   private void insertOrder(Connection conn, int orderId, double subtotal, Integer customerId) throws Exception {
+
       PreparedStatement stmt = conn.prepareStatement(
          "INSERT INTO orders "
          + "(id, customer_id, store_id, order_type, status, total, discount, payment_method) "
          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
       stmt.setInt(1, orderId);
 
-      // Guest order. A cashier does not look up a customer to ring someone up.
-      stmt.setNull(2, Types.INTEGER);
+      stmt.setObject(2, customerId, Types.INTEGER);
       stmt.setInt(3, STORE_ID);
-      stmt.setString(4, ORDER_TYPE);
-      stmt.setString(5, STATUS_OPEN);
+      stmt.setString(4, customerId == null ? ORDER_TYPE : "pickup");
+      stmt.setString(5, customerId == null ? STATUS_OPEN : "placed");
       stmt.setDouble(6, subtotal);
       stmt.setDouble(7, 0.0);
       stmt.setString(8, PAYMENT_PENDING);
@@ -217,6 +256,13 @@ public class OrderDao {
          this.menuItemId = menuItemId;
          this.quantity = quantity;
          this.unitPrice = unitPrice;
+      }
+   }
+
+   // Serialize writes before calculating IDs for tables without sequences.
+   private void lockForIdAllocation(Connection conn, String tables) throws Exception {
+      try (var stmt = conn.createStatement()) {
+         stmt.execute("LOCK TABLE " + tables + " IN SHARE ROW EXCLUSIVE MODE");
       }
    }
 
