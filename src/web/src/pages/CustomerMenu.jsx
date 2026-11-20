@@ -5,6 +5,7 @@ import TicketPanel from '../components/TicketPanel'
 import { useCart } from '../hooks/useCart'
 import { useMenu } from '../hooks/useMenu'
 import { useSharedCart } from '../hooks/useSharedCart'
+import { useSharedCartItems } from '../hooks/useSharedCartItems'
 
 // Customer builds meals here. Sending the order is a later story.
 function CustomerMenu() {
@@ -12,6 +13,7 @@ function CustomerMenu() {
   const { items, loading, error } = useMenu()
   const cart = useCart(user?.email)
   const sharedCart = useSharedCart(token)
+  const shared = useSharedCartItems(token, sharedCart.cart?.joinCode)
   const actions = {
     removeSide: cart.removeSide,
     removeEntree: cart.removeEntree,
@@ -33,7 +35,7 @@ function CustomerMenu() {
         </div>
       </header>
 
-      <SharedCartPanel sharedCart={sharedCart} />
+      <SharedCartPanel sharedCart={sharedCart} shared={shared} />
 
       <TicketPanel
         ticket={cart.ticket}

@@ -30,3 +30,18 @@
   font-size: 0.92rem;
   opacity: 0.8;
 }
+
+.shared-cart__join {
+  margin: 1rem 0 0.75rem;
+}
+
+.shared-cart__join label {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.shared-cart__join input {
+  width: 9rem;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: 0.15em;
+}
