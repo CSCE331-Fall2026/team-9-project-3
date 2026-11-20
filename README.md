@@ -10,7 +10,7 @@ A publicly hosted web POS and ordering system for Panda Express that supports ca
 
 ## Current sprint
 
-Sprint 2 is closed for submission. Planned **28** points (#21–#27); completed **16** (#21 personal cart, #23 create shared cart + code, #25 manager sales summary, #26 menu pictures). Still open for Sprint 3 carry-over: #22 submit pickup, #24 join shared cart, #27 link orders to Google. Demoable feedback path: customer Browse with pictures → My cart → create Shared cart code; manager Sales summary. Meetings + burn-up: `sprint-materials/sprint2-meetings.md`, `sprint-materials/sprint2-burn-up.jpg`. User study 1: `sprint-materials/user-study-1.md`. Board: link above.
+Sprint 2 is closed for submission. Planned **28** points (#21–#27); completed **23** (#21 personal cart, #22 submit pickup, #23 create shared cart + code, #25 manager sales summary, #26 menu pictures, #27 link orders to Google). Still open: #24 join shared cart. Demo path: customer Browse with pictures → My cart → **Place pickup order** → create Shared cart code; manager Sales summary. Meetings + burn-up: `sprint-materials/sprint2-meetings.md`, `sprint-materials/sprint2-burn-up.jpg`. User study 1: `sprint-materials/user-study-1.md`. Board: link above.
 
 ## Roles
 | Name | Role |

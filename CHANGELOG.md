@@ -8,9 +8,11 @@ All notable changes to the database schema and data set since Project 2 are docu
 
 ## Sprint 2
 
+- **Customer pickup submit (#22):** Added `POST /api/customer/orders` (customer auth). Places a personal cart as a pickup order (`order_type = pickup`, `status = placed`). Customer UI: **Place pickup order** with order id + subtotal confirmation; empty cart cannot submit.
+- **Link orders to Google (#27):** Added `customer.google_subject` (`db/migrations/001-customer-google-subject.sql`). Customer sessions carry the verified Google subject; the first successful pickup creates/finds the `customer` row and sets `orders.customer_id`. Cashier `POST /api/orders` stays guest/`open` as before.
 - **Menu pictures (#26):** Added optional `menu_item.image_url` (`db/menu-images.sql`). Seed paths point at official Panda Express product photos under `src/web/public/menu/items/`. `GET /api/menu` returns `imageUrl`. Customer Browse shows item pictures; My cart and Shared cart stay separate labeled sections.
-- **Personal cart / meal pricing (#21):** Cashier and customer save use `meals` (size + sides + entrees) plus extra `items`. A side inside a meal is stored with `unit_price` 0 because the size price already includes it. Premium entrees keep their upcharge. Customer cart stays in sessionStorage.
-- **Shared cart create (#23):** Added `shared_cart` table (`db/shared-cart.sql`) with `id`, `join_code` (unique 6 character code), `host_email`, `host_name`, `status` (`open`), and `created_at`. Customer endpoints `POST /api/shared-carts` and `GET /api/shared-carts/mine`. Creating a cart returns a short `joinCode`; it does not write to `orders`. Items in a shared cart come with #24.
+- **Personal cart / meal pricing (#21):** Cashier and customer save use `meals` (size + sides + entrees) plus extra `items`. A side inside a meal is stored with `unit_price` 0 because the size price already includes it. Premium entrees keep their upcharge. Customer cart stays in sessionStorage until pickup submit.
+- **Shared cart create (#23):** Added `shared_cart` table (`db/shared-cart.sql`) with `id`, `join_code` (unique 6 character code), `host_email`, `host_name`, `status` (`open`), and `created_at`. Customer endpoints `POST /api/shared-carts` and `GET /api/shared-carts/mine`. Creating a cart returns a short `joinCode`; it does not write to `orders`. Join/add items (#24) still open.
 - **Manager sales summary (#25):** Added `GET /api/manager/sales-summary?days=1|7|30` (manager only). Returns order count, sales total, average order, and the 10 latest orders in that window. Read only. No schema change.
 
 ## Sprint 1

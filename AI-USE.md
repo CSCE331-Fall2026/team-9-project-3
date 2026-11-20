@@ -15,3 +15,4 @@
 | 2026-11-19 | Claude | Sprint 2 #23 shared cart: helped write `db/shared-cart.sql`, `SharedCartDao`, the two shared cart endpoints, and the "Order with friends" panel (useSharedCart, SharedCartPanel). Tested locally against Postgres and in Chrome before committing. |
 | 2026-11-19 | Claude | Sprint 2 #25 manager sales summary: helped write `SalesSummaryDao`, the `/api/manager/sales-summary` endpoint, and the Sales summary page (useSalesSummary, ManagerSales). Tested locally against Postgres and in Chrome before committing. |
 | 2026-11-19 | Cursor | helped with menu image layout and compiling our meeting docs into proper sprint material layout|
+| 2026-11-20 | Cursor | Merged Ayaan #22/#27 pickup branch: restored Number JSON parsing for meal/item ids, updated CHANGELOG/README for customer submit + Google-linked orders, applied Neon `google_subject` migration. |

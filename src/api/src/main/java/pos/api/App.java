@@ -332,11 +332,11 @@ public class App {
          }
          Map<?, ?> meal = (Map<?, ?>) rawMeal;
          Object sizeId = meal.get("sizeId");
-         if (!(sizeId instanceof Integer)) {
+         if (!(sizeId instanceof Number)) {
             throw new IllegalArgumentException("Each meal needs a sizeId.");
          }
          meals.add(new MealSelection(
-            (Integer) sizeId,
+            ((Number) sizeId).intValue(),
             readIdList(meal.get("sideIds"), "sideIds"),
             readIdList(meal.get("entreeIds"), "entreeIds")));
       }
@@ -349,10 +349,10 @@ public class App {
       }
       List<Integer> ids = new ArrayList<Integer>();
       for (Object value : (List<?>) raw) {
-         if (!(value instanceof Integer)) {
+         if (!(value instanceof Number)) {
             throw new IllegalArgumentException(label + " must be menu item ids.");
          }
-         ids.add((Integer) value);
+         ids.add(Integer.valueOf(((Number) value).intValue()));
       }
       return ids;
    }
@@ -375,11 +375,11 @@ public class App {
          Map<?, ?> item = (Map<?, ?>) rawItem;
          Object menuItemId = item.get("menuItemId");
          Object quantity = item.get("quantity");
-         if (!(menuItemId instanceof Integer) || !(quantity instanceof Integer)) {
+         if (!(menuItemId instanceof Number) || !(quantity instanceof Number)) {
             throw new IllegalArgumentException("Each item needs a menuItemId and quantity.");
          }
-         lines.add(new OrderLine((Integer) menuItemId,
-            (Integer) quantity));
+         lines.add(new OrderLine(((Number) menuItemId).intValue(),
+            ((Number) quantity).intValue()));
       }
       return lines;
    }
