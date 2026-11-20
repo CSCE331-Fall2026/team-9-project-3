@@ -3,6 +3,7 @@ package pos.api.menu;
 /**
  * One row of menu_item. Adapted from Project 2 for the HTTP API.
  * Nutrition columns are nullable in the schema, so they are Integer (null = unknown).
+ * imageUrl is optional; the customer menu falls back to a category placeholder.
  */
 public class MenuItem {
    private final int id;
@@ -15,10 +16,11 @@ public class MenuItem {
    private final Integer fat;
    private final Integer carbohydrates;
    private final String allergens;
+   private final String imageUrl;
 
    public MenuItem(int id, String name, String category, double basePrice, boolean available,
                    Integer calorie, Integer protein, Integer fat, Integer carbohydrates,
-                   String allergens) {
+                   String allergens, String imageUrl) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -29,6 +31,7 @@ public class MenuItem {
       this.fat = fat;
       this.carbohydrates = carbohydrates;
       this.allergens = allergens;
+      this.imageUrl = imageUrl;
    }
 
    public int getId() {
@@ -69,5 +72,9 @@ public class MenuItem {
 
    public String getAllergens() {
       return allergens;
+   }
+
+   public String getImageUrl() {
+      return imageUrl;
    }
 }
