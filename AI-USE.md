@@ -12,4 +12,5 @@
 | 2026-11-12 | Claude | User study 1 format help 
 | 2026-11-15 | Claude | Helped analyze results |
 | 2026-11-17 | CLaude | Helped create the customer personal cart system and edited changelog
+| 2026-11-19 | Claude | Sprint 2 #23 shared cart: helped write `db/shared-cart.sql`, `SharedCartDao`, the two shared cart endpoints, and the "Order with friends" panel (useSharedCart, SharedCartPanel). Tested locally against Postgres and in Chrome before committing. |
 | 2026-11-19 | Claude | Sprint 2 #25 manager sales summary: helped write `SalesSummaryDao`, the `/api/manager/sales-summary` endpoint, and the Sales summary page (useSalesSummary, ManagerSales). Tested locally against Postgres and in Chrome before committing. |
