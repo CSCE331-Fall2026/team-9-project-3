@@ -9,12 +9,13 @@ import java.util.List;
 import pos.api.db.Database;
 
 /**
- * JDBC reads against menu_item. Same query shape as Project 2 MenuDao.
+ * JDBC reads against menu_item. Same query shape as Project 2 MenuDao,
+ * plus optional image_url for the customer menu.
  */
 public class MenuDao {
    private static final String SELECT_COLUMNS =
       "SELECT id, name, category, base_price, is_available, "
-      + "calorie, protein, fat, carbohydrates, allergens FROM menu_item";
+      + "calorie, protein, fat, carbohydrates, allergens, image_url FROM menu_item";
 
    public List<MenuItem> loadAvailable() {
       return queryList(SELECT_COLUMNS + " WHERE is_available = TRUE ORDER BY category, name");
@@ -39,7 +40,8 @@ public class MenuDao {
                nullableInt(rows, "protein"),
                nullableInt(rows, "fat"),
                nullableInt(rows, "carbohydrates"),
-               rows.getString("allergens")));
+               rows.getString("allergens"),
+               rows.getString("image_url")));
          }
          rows.close();
          stmt.close();
