@@ -42,11 +42,15 @@ function writeTicket(email, ticket) {
   if (!email) {
     return
   }
-  sessionStorage.setItem(storageKey(email), JSON.stringify({
-    meals: ticket.meals,
-    extras: ticket.extras,
-    activeMealId: ticket.activeMealId,
-  }))
+  try {
+    sessionStorage.setItem(storageKey(email), JSON.stringify({
+      meals: ticket.meals,
+      extras: ticket.extras,
+      activeMealId: ticket.activeMealId,
+    }))
+  } catch {
+    // Keep the cart usable in memory when browser storage is blocked or full.
+  }
 }
 
 // Personal cart for one customer. A refresh keeps it for this browser tab.
