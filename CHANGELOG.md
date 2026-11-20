@@ -4,16 +4,21 @@ All notable changes to the database schema and data set since Project 2 are docu
 
 ## Unreleased
 
-- **Menu pictures (Sprint 2, #26):** Added optional `menu_item.image_url` (`db/menu-images.sql`). Seed paths point at official Panda Express product photos under `src/web/public/menu/items/` (from PandaExpressWebsite / pandaexpress.ca / pandarg media assets). `GET /api/menu` returns `imageUrl`. The customer Browse grid shows item pictures; My cart and Shared cart stay separate labeled sections. Category placeholders cover missing/broken images.
-- **Meal pricing:** Cashier save now takes `meals` (size + sides + entrees) plus extra `items`. A side inside a meal is stored with `unit_price` 0 because the size price already includes it. Premium entrees keep their upcharge. No schema change.
+- (none yet for Sprint 3)
+
+## Sprint 2
+
+- **Menu pictures (#26):** Added optional `menu_item.image_url` (`db/menu-images.sql`). Seed paths point at official Panda Express product photos under `src/web/public/menu/items/`. `GET /api/menu` returns `imageUrl`. Customer Browse shows item pictures; My cart and Shared cart stay separate labeled sections.
+- **Personal cart / meal pricing (#21):** Cashier and customer save use `meals` (size + sides + entrees) plus extra `items`. A side inside a meal is stored with `unit_price` 0 because the size price already includes it. Premium entrees keep their upcharge. Customer cart stays in sessionStorage.
+- **Shared cart create (#23):** Added `shared_cart` table (`db/shared-cart.sql`) with `id`, `join_code` (unique 6 character code), `host_email`, `host_name`, `status` (`open`), and `created_at`. Customer endpoints `POST /api/shared-carts` and `GET /api/shared-carts/mine`. Creating a cart returns a short `joinCode`; it does not write to `orders`. Items in a shared cart come with #24.
+- **Manager sales summary (#25):** Added `GET /api/manager/sales-summary?days=1|7|30` (manager only). Returns order count, sales total, average order, and the 10 latest orders in that window. Read only. No schema change.
+
+## Sprint 1
 
 - **Hosting/DB decision:** App hosted externally (Vercel + Render). Project 2 Postgres on the TAMU engineering AWS server cannot be used (VPN-only). Migration target: **Neon**.
-- **Neon baseline:** Same Project 2 schema in `db/schema.sql`. Demo seed is menu rows only (`db/seed-menu.sql`); full order history can be loaded later from a Project 2 dump. No schema changes vs Project 2 `team9db`.
+- **Neon baseline:** Same Project 2 schema in `db/schema.sql`. Demo seed is menu rows only (`db/seed-menu.sql`); full order history can be loaded later from a Project 2 dump.
 - **API scaffold:** Javalin service in `src/api` with `GET /api/health` and `GET /api/menu` over JDBC.
 - **Web scaffold:** React (Vite) app in `src/web` that calls the API for health + menu.
 - **Auth:** Added `employee` table (`db/employee.sql`) mapping Google emails to `cashier` / `manager`. API endpoints `POST /api/auth/google`, `GET /api/auth/me`, and role-gated `/api/cashier/home` + `/api/manager/home`.
-- **Create order (Sprint 1):** Added `db/store.sql`, which inserts the one store row (id 1, same as Project 2). The menu seed had no store, and `orders.store_id` must point at a store, so orders could not be saved without it. No table changes.
-- **Manager inventory data:** Loaded the 30 Project 2 `inventory_item` rows for store 1 (`db/seed-inventory.sql`). No schema change. The manager inventory screen was empty because Neon had no inventory rows.
-- **Create order API:** Added `POST /api/orders` (cashier only). It saves one `orders` row and its `order_item` rows in one transaction. Prices are looked up in `menu_item`, not taken from the browser. Payment is a later story, so a new order is saved with `status = 'open'` and `payment_method = 'pending'`, and `customer_id` is empty (guest order).
-- **Shared cart (Sprint 2, #23):** Added a new `shared_cart` table (`db/shared-cart.sql`) with `id`, `join_code` (unique 6 character code), `host_email`, `host_name`, `status` (`open`), and `created_at`. It holds the cart itself only; items in a shared cart come with #24. New API endpoints `POST /api/shared-carts` and `GET /api/shared-carts/mine` (customer only). Creating a shared cart does not write to `orders`.
-- **Manager sales summary (Sprint 2, #25):** Added `GET /api/manager/sales-summary?days=1|7|30` (manager only). It reads `orders` and returns the order count, sales total, average order, and the 10 latest orders in that window. The window uses the database clock, the same clock that stamps `orders.created_at`. Read only. No schema or data change.
+- **Create order:** Added `db/store.sql`, which inserts the one store row (id 1, same as Project 2). `POST /api/orders` (cashier only) saves one `orders` row and its `order_item` rows in one transaction. Prices are looked up in `menu_item`. New orders use `status = 'open'` and `payment_method = 'pending'`.
+- **Manager inventory data:** Loaded the 30 Project 2 `inventory_item` rows for store 1 (`db/seed-inventory.sql`). No schema change.
