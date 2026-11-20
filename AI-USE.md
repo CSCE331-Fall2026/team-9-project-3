@@ -13,4 +13,4 @@
 | 2026-11-15 | Claude | Helped analyze results |
 | 2026-11-17 | CLaude | Helped create the customer personal cart system and edited changelog
 | 2026-11-19 | Claude | Sprint 2 #23 shared cart: helped write `db/shared-cart.sql`, `SharedCartDao`, the two shared cart endpoints, and the "Order with friends" panel (useSharedCart, SharedCartPanel). Tested locally against Postgres and in Chrome before committing. |
-| 2026-11-20 | Claude | Sprint 2 #24 join a shared cart: helped with the DAO methods and useSharedCartItems hook, set up testing without Google login, caught a duplicate-row race in add-item and fixed it with a unique index , and kept size items and a placeholder menu row out of the add dropdown. 
+| 2026-11-20 | Claude | Sprint 2 #24 join a shared cart: helped with the DAO methods and useSharedCartItems hook, set up testing without Google login, caught a duplicate-row race in add-item and fixed it with a unique index, and kept size items and a placeholder menu row out of the add dropdown.|
