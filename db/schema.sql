@@ -28,7 +28,8 @@ CREATE TABLE menu_item (
   protein INT,
   fat INT,
   carbohydrates INT,
-  allergens VARCHAR(200)
+  allergens VARCHAR(200),
+  image_url VARCHAR(300)
 );
 
 CREATE TABLE inventory_item (

@@ -14,6 +14,13 @@ psql "$DATABASE_URL" -f db/seed-menu.sql
 psql "$DATABASE_URL" -f db/store.sql
 psql "$DATABASE_URL" -f db/seed-inventory.sql
 psql "$DATABASE_URL" -f db/shared-cart.sql
+psql "$DATABASE_URL" -f db/menu-images.sql
+```
+
+If the database already exists from an earlier Sprint, only run the image migration:
+
+```bash
+psql "$DATABASE_URL" -f db/menu-images.sql
 ```
 
 4. Put the same URL in Render as `DATABASE_URL` (and optionally in `local/db.txt` for laptop runs — see below).
