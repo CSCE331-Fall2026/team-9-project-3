@@ -63,6 +63,7 @@ public class App {
 
       app.post("/api/shared-carts", ctx -> createSharedCart(ctx, authService, sharedCartDao));
       app.get("/api/shared-carts/mine", ctx -> mySharedCart(ctx, authService, sharedCartDao));
+      app.post("/api/shared-carts/join", ctx -> joinSharedCart(ctx, authService, sharedCartDao));
 
       app.exception(AuthException.class, (e, ctx) -> {
          Map<String, String> error = new HashMap<String, String>();
@@ -253,6 +254,44 @@ public class App {
          error.put("error", e.getMessage());
          ctx.status(500).json(error);
       }
+   }
+
+   /**
+    * A customer joins a shared cart with the code the host gave them.
+    * Body: {"joinCode": "K7QM4P"}
+    * Reply: {"cart": {...}, "items": [...]}, or 404 with an error for a wrong or closed code.
+    */
+   private static void joinSharedCart(Context ctx, AuthService authService,
+      SharedCartDao sharedCartDao) throws AuthException {
+      Employee customer = requireCustomer(ctx, authService);
+      if (customer == null) {
+         return;
+      }
+
+      try {
+         Map<?, ?> body = ctx.bodyAsClass(Map.class);
+         Object rawCode = body == null ? null : body.get("joinCode");
+         String code = rawCode == null ? "" : String.valueOf(rawCode);
+         sendSharedCart(ctx, sharedCartDao, sharedCartDao.findOpenByCode(code));
+      } catch (Exception e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(500).json(error);
+      }
+   }
+
+   // Sends the cart and its items, or a 404 when the code did not match an open cart.
+   private static void sendSharedCart(Context ctx, SharedCartDao sharedCartDao, SharedCart cart) {
+      if (cart == null) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "That code did not match an open shared cart. Check it and try again.");
+         ctx.status(404).json(error);
+         return;
+      }
+      Map<String, Object> body = new HashMap<String, Object>();
+      body.put("cart", cart);
+      body.put("items", sharedCartDao.loadItems(cart.getId()));
+      ctx.json(body);
    }
 
    // Signed-in customer, or null after sending a 403 when an employee calls a customer route.
