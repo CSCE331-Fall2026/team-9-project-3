@@ -25,6 +25,7 @@ import pos.api.menu.MenuItem;
 import pos.api.order.MealSelection;
 import pos.api.order.OrderDao;
 import pos.api.order.OrderLine;
+import pos.api.order.SalesSummaryDao;
 
 /**
  * Thin HTTP layer over Project 2 JDBC for Sprint 1 demos.
@@ -35,6 +36,7 @@ public class App {
       MenuDao menuDao = new MenuDao();
       OrderDao orderDao = new OrderDao();
       InventoryDao inventoryDao = new InventoryDao();
+      SalesSummaryDao salesSummaryDao = new SalesSummaryDao();
       SharedCartDao sharedCartDao = new SharedCartDao();
       AuthService authService = buildAuthService();
 
@@ -58,8 +60,11 @@ public class App {
       app.get("/api/manager/home", ctx -> roleHome(ctx, authService, "manager"));
 
       app.get("/api/manager/inventory", ctx -> inventory(ctx, authService, inventoryDao));
+      app.get("/api/manager/sales-summary",
+         ctx -> salesSummary(ctx, authService, salesSummaryDao));
 
-      app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao));
+      app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao, false));
+      app.post("/api/customer/orders", ctx -> createOrder(ctx, authService, orderDao, true));
 
       app.post("/api/shared-carts", ctx -> createSharedCart(ctx, authService, sharedCartDao));
       app.get("/api/shared-carts/mine", ctx -> mySharedCart(ctx, authService, sharedCartDao));
@@ -160,6 +165,40 @@ public class App {
       ctx.json(body);
    }
 
+   /**
+    * Order count and sales total for the last 1, 7, or 30 days, plus the latest orders.
+    * Example: GET /api/manager/sales-summary?days=7
+    * Reply: {"days": 7, "orderCount": 12, "salesTotal": 154.5, "averageOrder": 12.88,
+    *         "recentOrders": [{"id": 14, "orderType": "in-store", "status": "open",
+    *         "total": 10.5, "minutesAgo": 5}, ...]}
+    */
+   private static void salesSummary(Context ctx, AuthService authService,
+      SalesSummaryDao salesSummaryDao) throws AuthException {
+      Employee employee = authService.requireEmployee(ctx.header("Authorization"));
+      if (!"manager".equalsIgnoreCase(employee.getRole())) {
+         ctx.status(403).json(Map.of("error", "Only a manager can view the sales summary."));
+         return;
+      }
+
+      String rawDays = ctx.queryParam("days");
+      int days = 1;
+      if (rawDays != null && !rawDays.isBlank()) {
+         if (!rawDays.equals("1") && !rawDays.equals("7") && !rawDays.equals("30")) {
+            ctx.status(400).json(Map.of("error", "days must be 1, 7, or 30."));
+            return;
+         }
+         days = Integer.parseInt(rawDays);
+      }
+
+      ctx.header("Cache-Control", "no-store");
+      try {
+         ctx.json(salesSummaryDao.loadSummary(days));
+      } catch (Exception e) {
+         ctx.status(500).json(Map.of("error", "Could not load the sales summary. Please try again."));
+         System.err.println("Could not load sales summary: " + e.getMessage());
+      }
+   }
+
    private static void inventory(Context ctx, AuthService authService, InventoryDao inventoryDao)
       throws AuthException {
       Employee employee = authService.requireEmployee(ctx.header("Authorization"));
@@ -178,34 +217,43 @@ public class App {
    }
 
    /**
-    * Saves a new cashier order.
+    * Saves a cashier order or personal pickup order.
     * Body: {"meals":[{"sizeId":2,"sideIds":[20],"entreeIds":[8,14]}],
     *        "items":[{"menuItemId":4,"quantity":1}]}
     * Reply: {"orderId": 91501, "subtotal": 13.50, "lineCount": 5}
     */
-   private static void createOrder(Context ctx, AuthService authService, OrderDao orderDao)
-      throws AuthException {
-      Employee employee = authService.requireEmployee(ctx.header("Authorization"));
-      if (!"cashier".equalsIgnoreCase(employee.getRole())) {
-         Map<String, String> error = new HashMap<String, String>();
-         error.put("error", "Only a cashier can create an order.");
-         ctx.status(403).json(error);
+   private static void createOrder(Context ctx, AuthService authService, OrderDao orderDao,
+      boolean pickup) throws AuthException {
+      String authorization = ctx.header("Authorization");
+      Employee user = pickup ? authService.requireUser(authorization)
+         : authService.requireEmployee(authorization);
+      String requiredRole = pickup ? "customer" : "cashier";
+      if (!requiredRole.equalsIgnoreCase(user.getRole())) {
+         ctx.status(403).json(Map.of("error", "Only a " + requiredRole + " can create this order."));
+         return;
+      }
+      if (pickup && user.getGoogleSubject() == null) {
+         throw new AuthException("Sign out and sign in again with Google to place a pickup order.");
+      }
+
+      Map<?, ?> body;
+      try {
+         body = ctx.bodyAsClass(Map.class);
+      } catch (Exception e) {
+         ctx.status(400).json(Map.of("error", "Send a valid JSON order."));
          return;
       }
 
       try {
-         Map<?, ?> body = ctx.bodyAsClass(Map.class);
          List<MealSelection> meals = readMeals(body);
          List<OrderLine> extras = readOrderLines(body);
-         ctx.status(201).json(orderDao.createOrder(extras, meals));
+         ctx.status(201).json(pickup ? orderDao.createPickupOrder(extras, meals, user)
+            : orderDao.createOrder(extras, meals));
       } catch (IllegalArgumentException e) {
-         Map<String, String> error = new HashMap<String, String>();
-         error.put("error", e.getMessage());
-         ctx.status(400).json(error);
+         ctx.status(400).json(Map.of("error", e.getMessage()));
       } catch (Exception e) {
-         Map<String, String> error = new HashMap<String, String>();
-         error.put("error", e.getMessage());
-         ctx.status(500).json(error);
+         ctx.status(500).json(Map.of("error", "Could not save the order. Please try again."));
+         System.err.println("Could not save the order: " + e.getMessage());
       }
    }
 

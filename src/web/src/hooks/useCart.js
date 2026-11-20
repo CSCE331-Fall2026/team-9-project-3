@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { savePickupOrder } from '../api/orders'
 import {
   addItem,
   changeExtra,
@@ -7,6 +8,7 @@ import {
   removeMeal,
   removeSide,
   setActiveMeal,
+  toOrderPayload,
 } from '../lib/ticket'
 
 const STORAGE_PREFIX = 'team9.customer.cart.v2.'
@@ -48,15 +50,18 @@ function writeTicket(email, ticket) {
 }
 
 // Personal cart for one customer. A refresh keeps it for this browser tab.
-// It is not submitted from here.
-export function useCart(email) {
+export function useCart(email, token) {
   const [ticket, setTicket] = useState(() => readTicket(email))
+  const [saving, setSaving] = useState(false)
+  const [savedOrder, setSavedOrder] = useState(null)
 
   useEffect(() => {
     setTicket(readTicket(email))
+    setSavedOrder(null)
   }, [email])
 
   function apply(change) {
+    setSavedOrder(null)
     setTicket((current) => {
       const next = change(current)
       writeTicket(email, next)
@@ -64,8 +69,32 @@ export function useCart(email) {
     })
   }
 
+  async function save() {
+    if (saving) return
+
+    setSaving(true)
+    setTicket((current) => ({ ...current, error: '' }))
+    try {
+      const order = await savePickupOrder(toOrderPayload(ticket), token)
+      setSavedOrder(order)
+      setTicket(emptyTicket())
+      try {
+        sessionStorage.removeItem(storageKey(email))
+      } catch {
+        // The order is already placed even if browser storage is unavailable.
+      }
+    } catch (err) {
+      setTicket((current) => ({ ...current, error: String(err.message || err) }))
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return {
     ticket,
+    saving,
+    savedOrder,
+    save,
     addItem: (item) => apply((current) => addItem(current, item)),
     removeSide: (mealId, index) => apply((current) => removeSide(current, mealId, index)),
     removeEntree: (mealId, index) => apply((current) => removeEntree(current, mealId, index)),

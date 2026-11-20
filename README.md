@@ -10,7 +10,7 @@ A publicly hosted web POS and ordering system for Panda Express that supports ca
 
 ## Current sprint
 
-Sprint 2 is planned and not built yet. The groomed stories are GitHub issues #21–#27 (28 points; Sprint 1 was 26). That includes customer cart/submit, shared cart start, manager sales, menu pictures (#26), and linking customer orders to Google accounts (#27). The demo target is still a customer placing a pickup order and two people creating or joining a shared cart by code. User study 1 notes live in `sprint-materials/user-study-1.md`. The board link above is the live backlog.
+Sprint 2 is closed for submission. Planned **28** points (#21–#27); completed **23** (#21 personal cart, #22 submit pickup, #23 create shared cart + code, #25 manager sales summary, #26 menu pictures, #27 link orders to Google). Still open: #24 join shared cart. Demo path: customer Browse with pictures → My cart → **Place pickup order** → create Shared cart code; manager Sales summary. Meetings + burn-up: `sprint-materials/sprint2-meetings.md`, `sprint-materials/sprint2-burn-up.jpg`. User study 1: `sprint-materials/user-study-1.md`. Board: link above.
 
 ## Roles
 | Name | Role |
@@ -60,6 +60,8 @@ Create order (cashier sign-in required): `POST /api/orders` with `{"items": [{"m
 
 Shared cart (customer sign-in required): `POST /api/shared-carts` creates one and returns its `joinCode` (or the open cart the customer already hosts). `GET /api/shared-carts/mine` returns that cart, or `null`. `POST /api/shared-carts/join` with `{"joinCode": "K7QM4P"}` joins a cart (404 for a wrong or closed code). `GET /api/shared-carts/{code}` returns the cart and its items. `POST /api/shared-carts/{code}/items` with `{"menuItemId": 24}` adds an item. Needs `db/shared-cart.sql` loaded.
 
+Sales summary (manager sign-in required): `GET /api/manager/sales-summary?days=7` returns the order count, sales total, average order, and latest orders for the last 1, 7, or 30 days. The page is `/manager/sales`.
+
 ### Web
 ```bash
 cd src/web
@@ -82,21 +84,39 @@ Employee login lives at `/login`. Cashier/manager homes are protected routes.
 
 Open `/customer/login` and sign in with Google, then browse `/menu`.
 Customer Google accounts do not need an employee record. The API issues a
-customer-only browsing session; no customer database row is created yet.
+customer session for browsing and checkout.
 Employee-only inventory and order endpoints reject customer sessions.
 
-The menu reads available items from the live database through `GET /api/menu`.
-The menu opens on sizes. A bowl, plate, bigger plate, kids meal, or a la carte
-meal has a fixed number of sides and entrees. You cannot add extra entrees onto
-a full meal. Sides and regular entrees are included in the size price; premium
-entrees add their upcharge. Apps, drinks, and a side ordered on its own are
-charged separately. The customer cart stays in the browser session. Submitting
-it is a later story. Cashiers save the same kind of meal.
+The menu reads available items from the live database through `GET /api/menu`
+(includes optional `imageUrl`). Customer `/menu` has three clear areas:
+**Browse** (picture cards), **My cart** (personal session cart), and
+**Shared cart** (group code). The menu opens on sizes. A bowl, plate, bigger
+plate, kids meal, or a la carte meal has a fixed number of sides and entrees.
+You cannot add extra entrees onto a full meal. Sides and regular entrees are
+included in the size price; premium entrees add their upcharge. Apps, drinks,
+and a side ordered on its own are charged separately. The personal cart stays
+in the browser session until a pickup order is placed. Cashiers save the same
+kind of meal. Needs `db/menu-images.sql` (or a fresh seed) for picture paths.
 The menu API remains public for existing menu integrations.
 
-To verify: sign in as a customer, choose Plate, add 1 side and 2 entrees, and
-check the subtotal is the plate price plus any premium. A third entree should
-be refused. Refresh; the meal should still be there. There is no submit button.
-Sign in as a cashier and save the same kind of meal. Sign out and open `/menu`
-again; it should redirect to customer sign-in.
+To verify: sign in as a customer, confirm Browse cards show pictures, My cart
+and Shared cart are labeled separately, choose Plate, add 1 side and 2 entrees,
+and check the subtotal is the plate price plus any premium. A third entree
+should be refused. Refresh and confirm the meal is still there, then select
+**Place pickup order** and check the order number and subtotal. Sign in as a
+cashier and save the same kind of meal. Sign out and open
+`/menu` again; it should redirect to customer sign-in.
 Local preview still requires Google OAuth configuration and a running API.
+
+The API links pickup orders to the verified Google account ID in the signed
+customer session. Each account gets a customer record on its first successful
+pickup order. If the email already belongs to an older customer record without
+a Google account ID, checkout directs the customer to the store for help.
+
+For existing databases, run this migration before deploying the API:
+
+```bash
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/migrations/001-customer-google-subject.sql
+```
+
+Customers with sessions issued before this change need to sign in again.
