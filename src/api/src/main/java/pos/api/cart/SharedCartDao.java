@@ -4,6 +4,8 @@ import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import pos.api.db.Database;
@@ -124,6 +126,41 @@ public class SharedCartDao {
          return true;
       } catch (Exception e) {
          throw new RuntimeException("Could not add that item: " + e.getMessage(), e);
+      } finally {
+         Database.close(conn);
+      }
+   }
+
+   /**
+    * Every line in a cart, oldest first, with the item's name and current price.
+    */
+   public List<SharedCartItem> loadItems(int cartId) {
+      List<SharedCartItem> items = new ArrayList<SharedCartItem>();
+      Connection conn = null;
+      try {
+         conn = Database.open();
+         PreparedStatement stmt = conn.prepareStatement(
+            "SELECT i.id, i.menu_item_id, m.name, m.base_price, i.quantity, "
+            + "i.added_by_email, i.added_by_name "
+            + "FROM shared_cart_item i JOIN menu_item m ON m.id = i.menu_item_id "
+            + "WHERE i.shared_cart_id = ? ORDER BY i.id");
+         stmt.setInt(1, cartId);
+         ResultSet rows = stmt.executeQuery();
+         while (rows.next()) {
+            items.add(new SharedCartItem(
+               rows.getInt("id"),
+               rows.getInt("menu_item_id"),
+               rows.getString("name"),
+               rows.getDouble("base_price"),
+               rows.getInt("quantity"),
+               rows.getString("added_by_email"),
+               rows.getString("added_by_name")));
+         }
+         rows.close();
+         stmt.close();
+         return items;
+      } catch (Exception e) {
+         throw new RuntimeException("Could not load the cart items: " + e.getMessage(), e);
       } finally {
          Database.close(conn);
       }
