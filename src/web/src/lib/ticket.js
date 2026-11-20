@@ -55,6 +55,7 @@ export function slotsFor(sizeName) {
   return MEAL_SLOTS[sizeName] || null
 }
 
+// A meal is complete when its side and entree counts exactly match its size.
 export function mealComplete(meal) {
   const slots = slotsFor(meal.size.name)
   if (!slots) {
