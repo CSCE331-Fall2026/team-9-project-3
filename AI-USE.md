@@ -14,5 +14,4 @@
 | 2026-11-17 | CLaude | Helped create the customer personal cart system and edited changelog
 | 2026-11-19 | Claude | Sprint 2 #23 shared cart: helped write `db/shared-cart.sql`, `SharedCartDao`, the two shared cart endpoints, and the "Order with friends" panel (useSharedCart, SharedCartPanel). Tested locally against Postgres and in Chrome before committing. |
 | 2026-11-19 | Claude | Sprint 2 #25 manager sales summary: helped write `SalesSummaryDao`, the `/api/manager/sales-summary` endpoint, and the Sales summary page (useSalesSummary, ManagerSales). Tested locally against Postgres and in Chrome before committing. |
-| 2026-11-19 | Cursor | Sprint 2 #26 clearer customer menu with pictures: helped add `image_url`, official product photos under `public/menu/items/`, MenuItemCard layout, and Browse / My cart / Shared cart labels. Tested API + Vite build locally. |
-| 2026-11-19 | Cursor | Sprint 2 closeout: drafted `sprint-materials/sprint2-meetings.md`, generated `sprint2-burn-up.jpg` from merge dates, updated README / sprint goals for the Sprint 2 release. |
+| 2026-11-19 | Cursor | helped with menu image layout and compiling our meeting docs into proper sprint material layout|
