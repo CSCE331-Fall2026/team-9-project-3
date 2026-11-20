@@ -166,6 +166,8 @@ public class OrderDao {
 
    private int findOrCreateCustomer(Connection conn, Employee customer) throws Exception {
       lockForIdAllocation(conn, "customer");
+
+      // 1. Already linked to this Google account.
       try (PreparedStatement stmt = conn.prepareStatement(
          "SELECT id FROM customer WHERE google_subject = ?")) {
          stmt.setString(1, customer.getGoogleSubject());
@@ -176,20 +178,44 @@ public class OrderDao {
          }
       }
 
+      // 2. Same email from an older row without a Google id — attach it.
+      try (PreparedStatement stmt = conn.prepareStatement(
+         "SELECT id, google_subject FROM customer WHERE LOWER(email) = LOWER(?)")) {
+         stmt.setString(1, customer.getEmail());
+         try (ResultSet rows = stmt.executeQuery()) {
+            if (rows.next()) {
+               int id = rows.getInt("id");
+               String existingSubject = rows.getString("google_subject");
+               if (existingSubject != null && !existingSubject.isBlank()
+                  && !existingSubject.equals(customer.getGoogleSubject())) {
+                  throw new IllegalArgumentException(
+                     "This email already has a customer record. Contact the store for help.");
+               }
+               try (PreparedStatement update = conn.prepareStatement(
+                  "UPDATE customer SET google_subject = ?, name = LEFT(?, 100) WHERE id = ?")) {
+                  update.setString(1, customer.getGoogleSubject());
+                  update.setString(2, customer.getName());
+                  update.setInt(3, id);
+                  update.executeUpdate();
+               }
+               return id;
+            }
+         }
+      }
+
+      // 3. Brand-new customer.
       try (PreparedStatement stmt = conn.prepareStatement(
          "INSERT INTO customer (id, name, email, google_subject) VALUES (?, LEFT(?, 100), ?, ?) "
-         + "ON CONFLICT (email) DO NOTHING RETURNING id")) {
+         + "RETURNING id")) {
          stmt.setInt(1, nextId(conn, "customer"));
          stmt.setString(2, customer.getName());
          stmt.setString(3, customer.getEmail());
          stmt.setString(4, customer.getGoogleSubject());
          try (ResultSet rows = stmt.executeQuery()) {
-            if (rows.next()) {
-               return rows.getInt("id");
-            }
+            rows.next();
+            return rows.getInt("id");
          }
       }
-      throw new IllegalArgumentException("This email already has a customer record. Contact the store for help.");
    }
 
    private void insertOrder(Connection conn, int orderId, double subtotal, Integer customerId) throws Exception {

@@ -71,11 +71,26 @@ export function useCart(email, token) {
 
   async function save() {
     if (saving) return
+    if (!token) {
+      setTicket((current) => ({
+        ...current,
+        error: 'Sign in again to place a pickup order.',
+      }))
+      return
+    }
+
+    let payload
+    try {
+      payload = toOrderPayload(ticket)
+    } catch (err) {
+      setTicket((current) => ({ ...current, error: String(err.message || err) }))
+      return
+    }
 
     setSaving(true)
     setTicket((current) => ({ ...current, error: '' }))
     try {
-      const order = await savePickupOrder(toOrderPayload(ticket), token)
+      const order = await savePickupOrder(payload, token)
       setSavedOrder(order)
       setTicket(emptyTicket())
       try {

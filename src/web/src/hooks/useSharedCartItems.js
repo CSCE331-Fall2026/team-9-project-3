@@ -60,7 +60,15 @@ export function useSharedCartItems(token, hostCode) {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(String(err.message || err))
+          const message = String(err.message || err)
+          setError(message)
+          // Drop a stale saved join code so sign-in / hosting can recover.
+          if (joinedCode && /did not match an open shared cart/i.test(message)) {
+            saveCode('')
+            setJoinedCode('')
+            setCart(null)
+            setItems([])
+          }
         }
       }
     }
@@ -111,6 +119,8 @@ export function useSharedCartItems(token, hostCode) {
   function leave() {
     saveCode('')
     setJoinedCode('')
+    setCart(null)
+    setItems([])
     setError('')
   }
 

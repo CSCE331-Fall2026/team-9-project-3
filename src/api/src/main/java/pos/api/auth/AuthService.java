@@ -72,6 +72,9 @@ public class AuthService {
       user.put("email", employee.getEmail());
       user.put("name", employee.getName());
       user.put("role", employee.getRole());
+      // Customers need a Google subject in the session to place pickup orders (#27).
+      user.put("canPlacePickup",
+         "customer".equalsIgnoreCase(employee.getRole()) && employee.getGoogleSubject() != null);
       return user;
    }
 }

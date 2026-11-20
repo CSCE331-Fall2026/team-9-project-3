@@ -29,6 +29,11 @@ function CustomerMenu() {
         <p className="lede">
           Start with a size. Then add the side and entrees that come with it. Signed in as {user?.name}.
         </p>
+        {user && user.canPlacePickup === false ? (
+          <p className="error" role="alert">
+            This sign-in is too old to place a pickup order. Sign out and sign in again with Google.
+          </p>
+        ) : null}
         <div className="actions">
           <button type="button" className="secondary" onClick={logout} disabled={cart.saving}>Sign out</button>
         </div>
