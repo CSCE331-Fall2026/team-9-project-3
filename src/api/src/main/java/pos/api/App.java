@@ -16,6 +16,8 @@ import pos.api.auth.Employee;
 import pos.api.auth.EmployeeDao;
 import pos.api.auth.GoogleTokenVerifier;
 import pos.api.auth.SessionTokens;
+import pos.api.cart.SharedCart;
+import pos.api.cart.SharedCartDao;
 import pos.api.db.Database;
 import pos.api.inventory.InventoryDao;
 import pos.api.menu.MenuDao;
@@ -33,6 +35,7 @@ public class App {
       MenuDao menuDao = new MenuDao();
       OrderDao orderDao = new OrderDao();
       InventoryDao inventoryDao = new InventoryDao();
+      SharedCartDao sharedCartDao = new SharedCartDao();
       AuthService authService = buildAuthService();
 
       Javalin app = Javalin.create(config -> {
@@ -57,6 +60,9 @@ public class App {
       app.get("/api/manager/inventory", ctx -> inventory(ctx, authService, inventoryDao));
 
       app.post("/api/orders", ctx -> createOrder(ctx, authService, orderDao));
+
+      app.post("/api/shared-carts", ctx -> createSharedCart(ctx, authService, sharedCartDao));
+      app.get("/api/shared-carts/mine", ctx -> mySharedCart(ctx, authService, sharedCartDao));
 
       app.exception(AuthException.class, (e, ctx) -> {
          Map<String, String> error = new HashMap<String, String>();
@@ -197,6 +203,69 @@ public class App {
          error.put("error", e.getMessage());
          ctx.status(500).json(error);
       }
+   }
+
+   /**
+    * Creates a shared cart for the signed-in customer and returns its join code.
+    * If they already host an open cart, that one is returned instead of making another.
+    * Reply: {"cart": {"id": 1, "joinCode": "K7QM4P", "hostName": "...", "status": "open", ...}}
+    */
+   private static void createSharedCart(Context ctx, AuthService authService,
+      SharedCartDao sharedCartDao) throws AuthException {
+      Employee customer = requireCustomer(ctx, authService);
+      if (customer == null) {
+         return;
+      }
+
+      try {
+         SharedCart cart = sharedCartDao.findOpenByHost(customer.getEmail());
+         if (cart == null) {
+            cart = sharedCartDao.create(customer.getEmail(), customer.getName());
+            ctx.status(201);
+         }
+         Map<String, Object> body = new HashMap<String, Object>();
+         body.put("cart", cart);
+         ctx.json(body);
+      } catch (Exception e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(500).json(error);
+      }
+   }
+
+   /**
+    * The signed-in customer's open shared cart, so it is still there after a refresh.
+    * Reply: {"cart": {...}} or {"cart": null} when they have not made one.
+    */
+   private static void mySharedCart(Context ctx, AuthService authService,
+      SharedCartDao sharedCartDao) throws AuthException {
+      Employee customer = requireCustomer(ctx, authService);
+      if (customer == null) {
+         return;
+      }
+
+      try {
+         Map<String, Object> body = new HashMap<String, Object>();
+         body.put("cart", sharedCartDao.findOpenByHost(customer.getEmail()));
+         ctx.json(body);
+      } catch (Exception e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(500).json(error);
+      }
+   }
+
+   // Signed-in customer, or null after sending a 403 when an employee calls a customer route.
+   private static Employee requireCustomer(Context ctx, AuthService authService)
+      throws AuthException {
+      Employee user = authService.requireUser(ctx.header("Authorization"));
+      if (!"customer".equalsIgnoreCase(user.getRole())) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "Only a signed-in customer can use a shared cart.");
+         ctx.status(403).json(error);
+         return null;
+      }
+      return user;
    }
 
    private static List<MealSelection> readMeals(Map<?, ?> body) {
