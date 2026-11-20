@@ -12,3 +12,19 @@ export async function fetchMySharedCart(token) {
   const data = await apiGet('/api/shared-carts/mine', token)
   return data.cart || null
 }
+
+// Joins a shared cart with the code a friend gave you.
+// Returns { cart, items }. Throws the API's message for a wrong or closed code.
+export function joinSharedCart(joinCode, token) {
+  return apiPost('/api/shared-carts/join', { joinCode }, token)
+}
+
+// The cart's current items, for refreshing. Returns { cart, items }.
+export function fetchSharedCart(joinCode, token) {
+  return apiGet(`/api/shared-carts/${encodeURIComponent(joinCode)}`, token)
+}
+
+// Adds one of a menu item to the cart. Returns { cart, items } with the item included.
+export function addSharedCartItem(joinCode, menuItemId, token) {
+  return apiPost(`/api/shared-carts/${encodeURIComponent(joinCode)}/items`, { menuItemId }, token)
+}
