@@ -14,10 +14,10 @@
 **Planned story points:** 28  
 (#21 personal cart 5, #22 submit pickup 5, #23 create shared cart 3, #24 join shared cart 5, #25 manager sales 5, #26 menu pictures 3, #27 link orders to Google 2)
 
-**Completed story points:** 16  
-(#21, #23, #25, #26)
+**Completed story points:** 28  
+(#21–#27, all merged to `main` and closed on the board)
 
-**Not finished this sprint (carried toward Sprint 3 / next work):** #22 submit (5), #24 join shared cart (5), #27 link customer Google to orders (2) — 12 pts
+**Still out of scope (Sprint 3):** group checkout of a shared cart (#11)
 
 ---
 
@@ -61,7 +61,7 @@
 - **Date / time:** Wednesday, Nov 19, 2026 · 8:00 PM
 - **Attendees:** Jack Berry, Nevin Kalloor, Dishant Patel, Ayaan Budhwani
 - **Blockers raised:** Ayaan — #22/#27 not started enough for Sprint 2 close; kitchen submit + account link need more than a day. Nevin — #24 join/add-items still open on a feature branch. Dishant — #23/#25 ready to merge; careful with conflict on `main`.
-- **Decisions:** Prioritize merging #23 and #25 tonight. Jack finishes #26 official menu photos + clearer Browse labels for the demo. Be honest in the retro that submit (#22), join (#24), and Google-linked orders (#27) miss Sprint 2; carry them with points into the next planning pass. Demo workflow for feedback: customer Google login → Browse with pictures → fill My cart → create Shared cart code; manager opens Sales summary.
+- **Decisions:** Prioritize merging #23 and #25 tonight. Jack finishes #26 official menu photos + clearer Browse labels for the demo. At this meeting, #22, #24, and #27 still looked like they would slip. They merged early Nov 20 and are in the completed 28. Demo workflow: customer Google login → Browse with pictures → fill My cart → place pickup order → create or join a Shared cart; manager opens Sales summary.
 
 ---
 
@@ -69,38 +69,39 @@
 
 - **Date / time:** Thursday, Nov 19, 2026 · 9:30 PM
 - **Attendees:** Jack Berry, Nevin Kalloor, Dishant Patel, Ayaan Budhwani
-- **Blockers raised:** None for Sprint 2 closeout beyond unfinished stories already listed. Need burn-up snapshot + GitHub Release for submission.
+- **Blockers raised:** None left on #21–#27. #22, #27, and #24 landed after this meeting (early Nov 20) and are closed. Burn-up snapshot is `sprint-materials/sprint2-burn-up.jpg`.
 
 ### What went well
 - User study 1 feedback turned into concrete stories (#26 labels/pictures, keep personal vs shared cart separate)
 - #21 meal cart fixed a real pricing bug (sides/entrees inside a meal)
-- #23 shared cart create + code is live and demoable without pretending full multi-user sync
+- Customer path is end to end: Browse → My cart → Place pickup order, with the order linked to the Google account (#22, #27)
+- #23 create + #24 join/add items are live; shared cart lines stay on the server
 - #25 manager sales summary is a clean read-only win with little schema risk
 - Parallel ownership (Jack / Dishant / Nevin / Ayaan) still worked when dependencies were called out early
 
 ### What did not go well
-- Planned 28 pts; finished 16 — too much packed after user-study planning
-- #22 submit and #27 account-link depended on cart + auth details that landed late
-- #24 join/add-items waited on #23 and did not close in Sprint 2
-- Board / burn-up still needs merge-date discipline (same lesson as Sprint 1)
+- #22, #24, and #27 all landed on the close night, after #21 and #23 were already on `main`
+- Join (#24) waited on the create-cart API, so the second half of the shared-cart work compressed into one night
+- Board dates and the first burn-up draft lagged the merges (same lesson as Sprint 1)
 
 ### Velocity
 - **Planned:** 28 story points  
-- **Completed:** 16 story points (#21=5, #23=3, #25=5, #26=3)  
-- **Missed:** 12 story points (#22=5, #24=5, #27=2)  
-- Velocity dropped vs Sprint 1’s 26 completed. Estimates for submit/join/link were optimistic once meal cart + shared-cart schema work showed up. For Sprint 3, plan closer to **16–20** pts unless join/submit are already mid-flight.
+- **Completed:** 28 story points (#21=5, #22=5, #23=3, #24=5, #25=5, #26=3, #27=2)  
+- **Missed:** 0  
+- Matches Sprint 1’s completed pace (26) with a late finish. For Sprint 3, keep group checkout (#11) as its own story instead of stacking it on join.
 
 ### Takeaways for future sprints
 - Do not schedule both “create shared cart” and “join + add items” as must-finish in the same short sprint unless create is already on `main` on day 1
-- Keep one end-to-end customer feedback path even when submit slips (Browse + My cart + create code was enough for study-ready UX feedback)
-- Carry #22 / #24 / #27 explicitly into Sprint 3 planning with the novel feature (#11) instead of silently shrinking scope
-- Upload burn-up + cut the GitHub Release the night before the live demo
+- Keep one end-to-end customer path in the demo: Browse, My cart, pickup submit, and join by code
+- Sprint 3 starts at group checkout (#11), not a redo of #22 / #24 / #27
+- Cut the GitHub Release from the same commit as the burn-up
 - Continue citing AI help in `AI-USE.md` the same day as the PR
 
 ### Demoable Sprint 2 MVP (for user feedback)
 1. Customer Google login → `/menu` Browse with item pictures  
 2. Build a Plate / Bowl in **My cart** (add/remove, subtotal, meal rules)  
-3. Create a **Shared cart** and copy the join code  
-4. Manager Google login → **Sales summary** for 1 / 7 / 30 days  
+3. **Place pickup order** and confirm the order number and subtotal  
+4. Create a **Shared cart**, join with the code, and add items  
+5. Manager Google login → **Sales summary** for 1 / 7 / 30 days  
 
 Live app: https://team-9-project-3-src.vercel.app/ · API: https://team-9-project-3.onrender.com/
