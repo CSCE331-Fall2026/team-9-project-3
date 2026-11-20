@@ -16,6 +16,7 @@ import pos.api.db.Database;
  */
 public class SharedCartDao {
    public static final String STATUS_OPEN = "open";
+   public static final String STATUS_CLOSED = "closed";
 
    // No 0/O or 1/I/L, so a code read out loud or typed from a phone is hard to get wrong.
    private static final String CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -26,6 +27,28 @@ public class SharedCartDao {
       "SELECT id, join_code, host_email, host_name, status, created_at FROM shared_cart";
 
    private final Random random = new SecureRandom();
+
+   /**
+    * Closes every open shared cart this customer hosts. Used on sign-out and before
+    * creating a fresh cart so a later login does not bring the old code back.
+    */
+   public void closeOpenByHost(String hostEmail) {
+      Connection conn = null;
+      try {
+         conn = Database.open();
+         PreparedStatement stmt = conn.prepareStatement(
+            "UPDATE shared_cart SET status = ? WHERE LOWER(host_email) = LOWER(?) AND status = ?");
+         stmt.setString(1, STATUS_CLOSED);
+         stmt.setString(2, hostEmail);
+         stmt.setString(3, STATUS_OPEN);
+         stmt.executeUpdate();
+         stmt.close();
+      } catch (Exception e) {
+         throw new RuntimeException("Could not close your shared cart: " + e.getMessage(), e);
+      } finally {
+         Database.close(conn);
+      }
+   }
 
    /**
     * The open shared cart this customer is hosting, or null if they have none.

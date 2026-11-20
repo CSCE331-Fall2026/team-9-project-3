@@ -1,6 +1,6 @@
 import { apiGet, apiPost } from './client'
 
-// Creates a shared cart for the signed-in customer (or returns the one they already host).
+// Creates a fresh shared cart (closes any open one this customer already hosts).
 // Returns the cart: { id, joinCode, hostName, status, createdAt }.
 export async function createSharedCart(token) {
   const data = await apiPost('/api/shared-carts', {}, token)
@@ -11,6 +11,14 @@ export async function createSharedCart(token) {
 export async function fetchMySharedCart(token) {
   const data = await apiGet('/api/shared-carts/mine', token)
   return data.cart || null
+}
+
+// Closes the hosted shared cart so the next login does not restore the old code.
+export async function closeMySharedCart(token) {
+  if (!token) {
+    return
+  }
+  await apiPost('/api/shared-carts/close-mine', {}, token)
 }
 
 // Joins a shared cart with the code a friend gave you.

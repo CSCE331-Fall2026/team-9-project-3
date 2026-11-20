@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { addSharedCartItem, fetchSharedCart, joinSharedCart } from '../api/sharedCarts'
+import { clearJoinedSharedCartCode } from '../lib/sessionCleanup'
 
 const STORAGE_KEY = 'team9.pos.sharedCartCode'
 const POLL_MS = 5000
@@ -17,7 +18,7 @@ function saveCode(code) {
     if (code) {
       localStorage.setItem(STORAGE_KEY, code)
     } else {
-      localStorage.removeItem(STORAGE_KEY)
+      clearJoinedSharedCartCode()
     }
   } catch {
     // Storage can be blocked. The cart still works until the page is refreshed.

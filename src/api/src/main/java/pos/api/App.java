@@ -68,6 +68,8 @@ public class App {
 
       app.post("/api/shared-carts", ctx -> createSharedCart(ctx, authService, sharedCartDao));
       app.get("/api/shared-carts/mine", ctx -> mySharedCart(ctx, authService, sharedCartDao));
+      app.post("/api/shared-carts/close-mine",
+         ctx -> closeMySharedCart(ctx, authService, sharedCartDao));
       app.post("/api/shared-carts/join", ctx -> joinSharedCart(ctx, authService, sharedCartDao));
       app.get("/api/shared-carts/{code}", ctx -> viewSharedCart(ctx, authService, sharedCartDao));
       app.post("/api/shared-carts/{code}/items",
@@ -258,8 +260,8 @@ public class App {
    }
 
    /**
-    * Creates a shared cart for the signed-in customer and returns its join code.
-    * If they already host an open cart, that one is returned instead of making another.
+    * Creates a fresh shared cart for the signed-in customer and returns its join code.
+    * Any open cart they already host is closed first so each create gets a new code.
     * Reply: {"cart": {"id": 1, "joinCode": "K7QM4P", "hostName": "...", "status": "open", ...}}
     */
    private static void createSharedCart(Context ctx, AuthService authService,
@@ -270,14 +272,11 @@ public class App {
       }
 
       try {
-         SharedCart cart = sharedCartDao.findOpenByHost(customer.getEmail());
-         if (cart == null) {
-            cart = sharedCartDao.create(customer.getEmail(), customer.getName());
-            ctx.status(201);
-         }
+         sharedCartDao.closeOpenByHost(customer.getEmail());
+         SharedCart cart = sharedCartDao.create(customer.getEmail(), customer.getName());
          Map<String, Object> body = new HashMap<String, Object>();
          body.put("cart", cart);
-         ctx.json(body);
+         ctx.status(201).json(body);
       } catch (Exception e) {
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", e.getMessage());
@@ -300,6 +299,27 @@ public class App {
          Map<String, Object> body = new HashMap<String, Object>();
          body.put("cart", sharedCartDao.findOpenByHost(customer.getEmail()));
          ctx.json(body);
+      } catch (Exception e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(500).json(error);
+      }
+   }
+
+   /**
+    * Closes the customer's open hosted shared cart. Called on sign-out so the next login
+    * starts with Create shared cart again.
+    */
+   private static void closeMySharedCart(Context ctx, AuthService authService,
+      SharedCartDao sharedCartDao) throws AuthException {
+      Employee customer = requireCustomer(ctx, authService);
+      if (customer == null) {
+         return;
+      }
+
+      try {
+         sharedCartDao.closeOpenByHost(customer.getEmail());
+         ctx.status(204);
       } catch (Exception e) {
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", e.getMessage());

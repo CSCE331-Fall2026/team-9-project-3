@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { closeMySharedCart } from '../api/sharedCarts'
+import { clearCustomerCartState } from '../lib/sessionCleanup'
 
 const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
 const STORAGE_KEY = 'team9.pos.session'
@@ -77,7 +79,18 @@ export function AuthProvider({ children }) {
       setUser(body.user)
       return body.user
     },
-    logout() {
+    async logout() {
+      const email = user?.email
+      const currentToken = token
+      // Close the hosted shared cart on the server so the next login does not restore it.
+      if (user?.role === 'customer' && currentToken) {
+        try {
+          await closeMySharedCart(currentToken)
+        } catch {
+          // Still clear the local session even if the close call fails.
+        }
+      }
+      clearCustomerCartState(email)
       localStorage.removeItem(STORAGE_KEY)
       setToken('')
       setUser(null)
