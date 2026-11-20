@@ -65,6 +65,8 @@ public class App {
       app.get("/api/shared-carts/mine", ctx -> mySharedCart(ctx, authService, sharedCartDao));
       app.post("/api/shared-carts/join", ctx -> joinSharedCart(ctx, authService, sharedCartDao));
       app.get("/api/shared-carts/{code}", ctx -> viewSharedCart(ctx, authService, sharedCartDao));
+      app.post("/api/shared-carts/{code}/items",
+         ctx -> addSharedCartItem(ctx, authService, sharedCartDao));
 
       app.exception(AuthException.class, (e, ctx) -> {
          Map<String, String> error = new HashMap<String, String>();
@@ -293,6 +295,50 @@ public class App {
 
       try {
          sendSharedCart(ctx, sharedCartDao, sharedCartDao.findOpenByCode(ctx.pathParam("code")));
+      } catch (Exception e) {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", e.getMessage());
+         ctx.status(500).json(error);
+      }
+   }
+
+   /**
+    * Adds one of a menu item to the cart. Works for the host and for people who joined.
+    * Body: {"menuItemId": 24}
+    * Reply: the cart and its items, like joining. 404 for a wrong or closed code, 400 when the
+    * item is missing or not available.
+    */
+   private static void addSharedCartItem(Context ctx, AuthService authService,
+      SharedCartDao sharedCartDao) throws AuthException {
+      Employee customer = requireCustomer(ctx, authService);
+      if (customer == null) {
+         return;
+      }
+
+      try {
+         SharedCart cart = sharedCartDao.findOpenByCode(ctx.pathParam("code"));
+         if (cart == null) {
+            sendSharedCart(ctx, sharedCartDao, null);
+            return;
+         }
+
+         Map<?, ?> body = ctx.bodyAsClass(Map.class);
+         Object rawId = body == null ? null : body.get("menuItemId");
+         if (!(rawId instanceof Number)) {
+            Map<String, String> error = new HashMap<String, String>();
+            error.put("error", "Pick a menu item to add.");
+            ctx.status(400).json(error);
+            return;
+         }
+
+         if (!sharedCartDao.addItem(cart.getId(), ((Number) rawId).intValue(),
+            customer.getEmail(), customer.getName())) {
+            Map<String, String> error = new HashMap<String, String>();
+            error.put("error", "That item is not available.");
+            ctx.status(400).json(error);
+            return;
+         }
+         sendSharedCart(ctx, sharedCartDao, cart);
       } catch (Exception e) {
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", e.getMessage());
